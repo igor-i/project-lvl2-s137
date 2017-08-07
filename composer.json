@@ -1,0 +1,29 @@
+{
+    "name": "igor-i/gendiff",
+    "description": "The project in Hexlet.io: Differences generator. Utility for finding differences in configuration files",
+    "type": "project",
+    "bin": [
+        "bin/gendiff"
+    ],
+    "authors": [
+        {
+            "name": "Igor Inkovskiy",
+            "email": "Inkovskiy@gmail.com"
+        }
+    ],
+    "scripts": {
+        "phpcs": "phpcs",
+        "phpunit": "phpunit"
+    },
+    "autoload": {
+        "psr-4": {
+            "PhpPackage\\": "src/"
+        }
+    },
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "*",
+        "squizlabs/php_codesniffer": "*",
+        "docopt/docopt": "^1.0"
+    }
+}
