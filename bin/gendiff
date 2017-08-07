@@ -22,3 +22,8 @@ Options:
   --format <fmt>                Report format [default: pretty]
 
 DOC;
+
+$args = Docopt::handle($doc, array('version'=>'Generate diff 0.0.2'));
+foreach ($args as $k=>$v) {
+    echo $k . ': ' . json_encode($v) . PHP_EOL;
+}
