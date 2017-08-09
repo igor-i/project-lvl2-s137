@@ -11,35 +11,9 @@ namespace Differ\Tests;
 
 use const Differ\differ\FILE_FORMATS;
 use \PHPUnit\Framework\TestCase;
-use \org\bovigo\vfs\vfsStream;
 
 class LibTest extends TestCase
 {
-    private $rootDir;
-
-    public function setUp()
-    {
-        $this->rootDir = vfsStream::setup('dir');
-    }
-
-    public function testGetContent()
-    {
-        $data = 'some data';
-        $pathToFile = vfsStream::url('dir') . DIRECTORY_SEPARATOR . 'temp';
-        $file = new \SplFileObject($pathToFile, 'ab');
-        $file->fwrite($data);
-        $this->assertEquals($data, \Differ\lib\getContent($pathToFile));
-    }
-
-    public function testGetContentException()
-    {
-        try {
-            \Differ\lib\getContent('non-existent' . DIRECTORY_SEPARATOR . 'file'  . DIRECTORY_SEPARATOR . 'path');
-            $this->fail('expected exception');
-        } catch (\Exception $e) {
-        }
-    }
-
     /**
      * @dataProvider additionProvider1
      * @param $expected

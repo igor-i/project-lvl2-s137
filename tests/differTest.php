@@ -10,25 +10,14 @@ namespace Differ\Tests;
 //require_once 'src/differ.php';
 
 use \PHPUnit\Framework\TestCase;
-use \org\bovigo\vfs\vfsStream;
 
 class DifferTest extends TestCase
 {
-
-    private $rootDir;
     private $testData = ["a" => 1, "b" => 2, "c" => 3, "d" => 4, "e" => 5];
-
-    public function setUp()
-    {
-        $this->rootDir = vfsStream::setup('dir');
-    }
 
     public function testGetContentFromJsonFileToArray()
     {
-        $data = json_encode($this->testData);
-        $pathToFile = vfsStream::url('dir') . DIRECTORY_SEPARATOR . 'temp.json';
-        $file = new \SplFileObject($pathToFile, 'ab');
-        $file->fwrite($data);
+        $pathToFile = 'fixtures' . DIRECTORY_SEPARATOR . 'data.json';
         $this->assertEquals($this->testData, \Differ\differ\getContentFromFileToArray('json', $pathToFile));
     }
 
