@@ -9,9 +9,13 @@ namespace Differ\lib;
 
 function getContent(string $pathToFile)
 {
-    $content = file_get_contents($pathToFile);
+    if (file_exists($pathToFile) && is_readable($pathToFile)) {
+        $content = file_get_contents($pathToFile);
+    } else {
+        throw new \Exception("file '{$pathToFile}' is undefined");
+    }
     if ($content === false) {
-        throw new \Exception("'{$pathToFile}' is undefined");
+        throw new \Exception("file '{$pathToFile}' is undefined");
     }
 
     return $content;

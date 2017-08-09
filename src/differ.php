@@ -7,6 +7,8 @@
 
 namespace Differ\differ;
 
+//require_once 'lib.php';
+
 use function \Differ\lib\getContent;
 use function \Differ\lib\defineFileFormat;
 
@@ -33,6 +35,13 @@ function genDiff(string $format, string $pathToFile1, string $pathToFile2)
         $content1 = getContentFromFileToArray($fileFormat1, $pathToFile1);
         $content2 = getContentFromFileToArray($fileFormat2, $pathToFile2);
 
+        if (!is_array($content1)) {
+            throw new \Exception("failed to convert data from a file '{$pathToFile1}' into an array");
+        }
+        if (!is_array($content2)) {
+            throw new \Exception("failed to convert data from a file '{$pathToFile2}' into an array");
+        }
+
         //сравниваем
         $result = arraysDif($content1, $content2);
 
@@ -54,27 +63,23 @@ function genDiff(string $format, string $pathToFile1, string $pathToFile2)
 
 function getContentFromFileToArray(string $fileFormat, string $pathToFile)
 {
-    try {
-        switch ($fileFormat) {
-            case 'json':
-                $content = json_decode(getContent($pathToFile), true);
-                break;
-//            case 'yaml':
-//                break;
-//            case 'ini':
-//                break;
-            default:
-                throw new \Exception("file format '{$fileFormat}' is unsupported");
-        }
-
-        if (!is_array($content)) {
-            throw new \Exception("'{$pathToFile}' does not contain {$fileFormat} data");
-        }
-
-        return $content;
-    } catch (\Exception $e) {
-        return $e->getMessage() . PHP_EOL;
+    switch ($fileFormat) {
+        case 'json':
+            $content = json_decode(getContent($pathToFile), true);
+            break;
+//        case 'yaml':
+//            break;
+//        case 'ini':
+//            break;
+        default:
+            throw new \Exception("file format '{$fileFormat}' is unsupported");
     }
+
+    if (!is_array($content)) {
+        throw new \Exception("file '{$pathToFile}' does not contain {$fileFormat} data");
+    }
+
+    return $content;
 }
 
 function arraysDif(array $array1, array $array2)
