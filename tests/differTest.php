@@ -59,9 +59,9 @@ class DifferTest extends TestCase
      * @param $array1
      * @param $array2
      */
-    public function testArraysDif($trueResult, $array1, $array2)
+    public function testArraysDiff($trueResult, $array1, $array2)
     {
-        $this->assertEquals($trueResult, \Differ\differ\arraysDif($array1, $array2));
+        $this->assertEquals($trueResult, \Differ\differ\arraysDiff($array1, $array2));
     }
 
     public function additionProvider2()

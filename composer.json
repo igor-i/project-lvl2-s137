@@ -25,7 +25,8 @@
         }
     },
     "require": {
-        "docopt/docopt": "*"
+        "docopt/docopt": "*",
+        "funct/funct": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "*",

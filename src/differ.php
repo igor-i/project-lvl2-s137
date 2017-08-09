@@ -43,7 +43,7 @@ function genDiff(string $format, string $pathToFile1, string $pathToFile2)
         }
 
         //сравниваем
-        $result = arraysDif($content1, $content2);
+        $result = arraysDiff($content1, $content2);
 
         //возвращаем результат в заданном формате
         switch ($format) {
@@ -82,27 +82,22 @@ function getContentFromFileToArray(string $fileFormat, string $pathToFile)
     return $content;
 }
 
-function arraysDif(array $array1, array $array2)
+function arraysDiff(array $array1, array $array2)
 {
-    $result1 = array_reduce(array_keys($array1), function ($acc, $key) use ($array1, &$array2) {
-        if (array_key_exists($key, $array2)) {
+    $arraysMerge = array_merge($array1, $array1);
+    return array_reduce(array_keys($arraysMerge), function ($acc, $key) use ($array1, $array2) {
+        if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
             if ($array1[$key] === $array2[$key]) {
                 $acc[$key] = $array1[$key];
             } else {
                 $acc["+ {$key}"] = $array2[$key];
                 $acc["- {$key}"] = $array1[$key];
             }
-            unset($array2[$key]);
-        } else {
+        } elseif (array_key_exists($key, $array1)) {
             $acc["- {$key}"] = $array1[$key];
+        } else {
+            $acc["+ {$key}"] = $array2[$key];
         }
         return $acc;
     }, []);
-
-    $result2 = array_reduce(array_keys($array2), function ($acc, $key) use ($array2) {
-        $acc["+ {$key}"] = $array2[$key];
-        return $acc;
-    }, []);
-
-    return array_merge($result1, $result2);
 }
