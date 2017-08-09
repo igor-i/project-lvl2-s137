@@ -21,6 +21,12 @@ class DifferTest extends TestCase
         $this->assertEquals($this->testData, \Differ\differ\getContentFromFileToArray('json', $pathToFile));
     }
 
+    public function testGetContentFromYamlFileToArray()
+    {
+        $pathToFile = 'fixtures' . DIRECTORY_SEPARATOR . 'data.yaml';
+        $this->assertEquals($this->testData, \Differ\differ\getContentFromFileToArray('yaml', $pathToFile));
+    }
+
     /**
      * @dataProvider additionProvider1
      * @param $argument
