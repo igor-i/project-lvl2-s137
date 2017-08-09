@@ -9,6 +9,7 @@ namespace Differ\differ;
 
 //require_once 'lib.php';
 
+use \Funct\Collection;
 use function \Differ\lib\getContent;
 use function \Differ\lib\defineFileFormat;
 
@@ -84,8 +85,9 @@ function getContentFromFileToArray(string $fileFormat, string $pathToFile)
 
 function arraysDiff(array $array1, array $array2)
 {
-    $arraysMerge = array_merge($array1, $array1);
-    return array_reduce(array_keys($arraysMerge), function ($acc, $key) use ($array1, $array2) {
+//    $arraysMerge = array_merge($array1, $array1);
+    $union = Collection\union(array_keys($array1), array_keys($array2));
+    return array_reduce($union, function ($acc, $key) use ($array1, $array2) {
         if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
             if ($array1[$key] === $array2[$key]) {
                 $acc[$key] = $array1[$key];
