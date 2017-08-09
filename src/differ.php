@@ -84,7 +84,7 @@ function getContentFromFileToArray(string $fileFormat, string $pathToFile)
 
 function arraysDif(array $array1, array $array2)
 {
-    $result = array_reduce(array_keys($array1), function ($acc, $key) use ($array1, &$array2) {
+    $result1 = array_reduce(array_keys($array1), function ($acc, $key) use ($array1, &$array2) {
         if (array_key_exists($key, $array2)) {
             if ($array1[$key] === $array2[$key]) {
                 $acc[$key] = $array1[$key];
@@ -99,5 +99,9 @@ function arraysDif(array $array1, array $array2)
         return $acc;
     }, []);
 
-    return array_merge($result, $array2);
+    $result2 = array_reduce(array_keys($array2), function ($acc, $key) use ($array2) {
+        return $acc["+ {$key}"] = $array2[$key];
+    }, []);
+
+    return array_merge($result1, $result2);
 }

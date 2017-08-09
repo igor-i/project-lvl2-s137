@@ -81,16 +81,16 @@ class DifferTest extends TestCase
             [
                 [
                     'first' => '1',
-                    '+ second' => '2',
-                    '- second' => '3'
-                ],
-                [
-                    'first' => '1',
-                    'second' => '3'
+                    '+ second' => 2,
+                    '- second' => '2'
                 ],
                 [
                     'first' => '1',
                     'second' => '2'
+                ],
+                [
+                    'first' => '1',
+                    'second' => 2
                 ]
             ],
             [
