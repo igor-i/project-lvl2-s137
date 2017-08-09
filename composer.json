@@ -17,7 +17,8 @@
     },
     "autoload": {
         "files": [
-            "src/differ.php"
+            "src/differ.php",
+            "src/lib.php"
         ],
         "psr-4": {
             "PhpPackage\\": "src/"
