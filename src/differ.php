@@ -100,7 +100,8 @@ function arraysDif(array $array1, array $array2)
     }, []);
 
     $result2 = array_reduce(array_keys($array2), function ($acc, $key) use ($array2) {
-        return $acc["+ {$key}"] = $array2[$key];
+        $acc["+ {$key}"] = $array2[$key];
+        return $acc;
     }, []);
 
     return array_merge($result1, $result2);
