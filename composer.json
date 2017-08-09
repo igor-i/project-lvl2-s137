@@ -16,15 +16,19 @@
         "phpunit": "phpunit"
     },
     "autoload": {
+        "files": [
+            "src/differ.php"
+        ],
         "psr-4": {
             "PhpPackage\\": "src/"
         }
     },
     "require": {
-        "docopt/docopt": "^1.0"
+        "docopt/docopt": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "*",
+        "mikey179/vfsStream": "*",
         "squizlabs/php_codesniffer": "*"
     }
 }

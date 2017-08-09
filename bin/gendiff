@@ -24,3 +24,4 @@ Options:
 DOC;
 
 $args = Docopt::handle($doc);
+Differ\differ\genDiff($args['--format'], $args['<firstFile>'], $args['<secondFile>']);
