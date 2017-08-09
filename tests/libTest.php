@@ -53,7 +53,7 @@ class LibTest extends TestCase
     public function additionProvider1()
     {
         return array_map(function ($item) {
-            return [$item, 'somepath'  . DIRECTORY_SEPARATOR . 'somefile' . $item];
+            return [$item, 'somepath'  . DIRECTORY_SEPARATOR . 'somefile.' . $item];
         }, FILE_FORMATS);
     }
 
