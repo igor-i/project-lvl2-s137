@@ -15,9 +15,9 @@ use \Funct\Collection;
 use function \Differ\lib\defineFileFormat;
 use function \Differ\parsers\jsonParser;
 use function \Differ\parsers\yamlParser;
+use function \Differ\parsers\iniParser;
 
-//const FILE_FORMATS = ['json', 'yaml', 'ini'];
-const FILE_FORMATS = ['json', 'yaml'];
+const FILE_FORMATS = ['json', 'yaml', 'ini'];
 //const REPORT_FORMATS = ['plain', 'pretty', 'json'];
 const REPORT_FORMATS = ['json'];
 
@@ -74,8 +74,9 @@ function getContentFromFileToArray(string $fileFormat, string $pathToFile)
         case 'yaml':
             $content = yamlParser($pathToFile);
             break;
-//        case 'ini':
-//            break;
+        case 'ini':
+            $content = iniParser($pathToFile);
+            break;
         default:
             throw new \Exception("file format '{$fileFormat}' is unsupported");
     }
