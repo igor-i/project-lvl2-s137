@@ -16,6 +16,7 @@ class DifferTest extends TestCase
 {
 
     const TEST_FIXTURES_DIR = 'tests'  . DIRECTORY_SEPARATOR . 'fixtures';
+    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","- setting2":"200","setting3":true,"- setting6":{"key":"value"},"+ setting4":"blah blah","+ setting5":{"key5":"value5"}},"group1":{"- baz":"bas","+ baz":"bars","foo":"bar"},"- group2":{"abc":"12345"},"+ group3":{"fee":"100500"}}';
 
     private $pathToFlatJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.json';
     private $pathToTreeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.json';
@@ -63,47 +64,12 @@ class DifferTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider additionProviderTree
-     * @param $expected
-     * @param $pathToFile
-     */
-    public function testTreeJsonDiff($expected, $pathToFile)
+    public function testTreeJsonDiff()
     {
-        $this->assertEquals($expected, genDiff('json', $pathToFile, $this->pathToTreeJsonFile));
-    }
-
-    public function additionProviderTree()
-    {
-        $json = <<<JSON
-{
-    "common": {
-        "setting1": "Value 1"
-      - "setting2": "200"
-        "setting3": true
-      - "setting6": {
-            "key": "value"
-        }
-      + "setting4": "blah blah"
-      + "setting5": {
-            "key5": "value5"
-        }
-    }
-    "group1": {
-      - "baz": "bas"
-      + "baz": "bars"
-        "foo": "bar"
-    }
-  - "group2": {
-        "abc": "12345"
-    }
-  + "group3": {
-        "fee": "100500"
-    }
-}
-JSON;
-
-        return [[$json, $this->pathToTreePlusMinusFile]];
+        $this->assertEquals(
+            self::EXPECTED_JSON,
+            genDiff('json', $this->pathToTreePlusMinusFile, $this->pathToTreeJsonFile)
+        );
     }
 
     /**
