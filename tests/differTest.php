@@ -18,13 +18,14 @@ class DifferTest extends TestCase
     const TEST_FIXTURES_DIR = 'tests'  . DIRECTORY_SEPARATOR . 'fixtures';
     const EXPECTED_JSON = '{"common":{"setting1":"Value 1","- setting2":"200","setting3":true,"- setting6":{"key":"value"},"+ setting4":"blah blah","+ setting5":{"key5":"value5"}},"group1":{"+ baz":"bars","- baz":"bas","foo":"bar"},"- group2":{"abc":"12345"},"+ group3":{"fee":"100500"}}';
 
-    private $pathToFlatJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.json';
-    private $pathToTreeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.json';
-    private $pathToFlatYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.yaml';
-    private $pathToFlatEqualFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-equal-after.json';
-    private $pathToFlatPlusFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-plus-after.json';
-    private $pathToFlatPlusMinusFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-plus-minus-after.json';
-    private $pathToTreePlusMinusFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-after.json';
+    private $pathToFlatBeforeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.json';
+    private $pathToTreeBeforeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.json';
+    private $pathToFlatBeforeYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.yaml';
+    private $pathToTreeBeforeYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.yaml';
+    private $pathToFlatEqualAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-equal-after.json';
+    private $pathToFlatMinusAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-minus-after.json';
+    private $pathToFlatAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-plus-minus-after.json';
+    private $pathToTreeAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-after.json';
 
     /**
      * @dataProvider additionProviderFlat
@@ -33,7 +34,7 @@ class DifferTest extends TestCase
      */
     public function testFlatJsonDiff($expected, $pathToFile)
     {
-        $this->assertEquals($expected, genDiff('json', $pathToFile, $this->pathToFlatJsonFile));
+        $this->assertEquals($expected, genDiff('json', $this->pathToFlatBeforeJsonFile, $pathToFile));
     }
 
     /**
@@ -43,7 +44,7 @@ class DifferTest extends TestCase
      */
     public function testFlatYamlDiff($expected, $pathToFile)
     {
-        $this->assertEquals($expected, genDiff('json', $pathToFile, $this->pathToFlatYamlFile));
+        $this->assertEquals($expected, genDiff('json', $this->pathToFlatBeforeYamlFile, $pathToFile));
     }
 
     public function additionProviderFlat()
@@ -51,15 +52,15 @@ class DifferTest extends TestCase
         return [
             [
                 '{"a":1,"b":2,"c":3,"d":4}',
-                $this->pathToFlatEqualFile
+                $this->pathToFlatEqualAfterJsonFile
             ],
             [
-                '{"+ a":1,"+ b":2,"+ c":3,"+ d":4}',
-                $this->pathToFlatPlusFile
+                '{"- a":1,"- b":2,"- c":3,"- d":4}',
+                $this->pathToFlatMinusAfterJsonFile
             ],
             [
-                '{"a":1,"+ b":2,"- b":"2","+ d":4,"- d":"new value","- new":"value","+ c":3}',
-                $this->pathToFlatPlusMinusFile
+                '{"a":1,"+ b":"2","- b":2,"+ d":"new value","- d":4,"+ new":"value","- c":3}',
+                $this->pathToFlatAfterJsonFile
             ],
         ];
     }
@@ -68,7 +69,15 @@ class DifferTest extends TestCase
     {
         $this->assertEquals(
             self::EXPECTED_JSON,
-            genDiff('json', $this->pathToTreePlusMinusFile, $this->pathToTreeJsonFile)
+            genDiff('json', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterJsonFile)
+        );
+    }
+
+    public function testTreeYamlDiff()
+    {
+        $this->assertEquals(
+            self::EXPECTED_JSON,
+            genDiff('json', $this->pathToTreeBeforeYamlFile, $this->pathToTreeAfterJsonFile)
         );
     }
 
@@ -79,7 +88,7 @@ class DifferTest extends TestCase
     public function testFileFormatException($pathToFile)
     {
         try {
-            genDiff('json', $pathToFile, $this->pathToFlatEqualFile);
+            genDiff('json', $pathToFile, $this->pathToFlatEqualAfterJsonFile);
             $this->fail('expected exception');
         } catch (\Exception $e) {
         }
@@ -96,7 +105,7 @@ class DifferTest extends TestCase
     public function testGetContentException()
     {
         try {
-            genDiff('json', $this->pathToFlatEqualFile, 'non-existent.json');
+            genDiff('json', 'non-existent.json', $this->pathToFlatEqualAfterJsonFile);
             $this->fail('expected exception');
         } catch (\Exception $e) {
         }
