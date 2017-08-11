@@ -16,7 +16,7 @@ class DifferTest extends TestCase
 {
 
     const TEST_FIXTURES_DIR = 'tests'  . DIRECTORY_SEPARATOR . 'fixtures';
-    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","- setting2":"200","setting3":true,"- setting6":{"key":"value"},"+ setting4":"blah blah","+ setting5":{"key5":"value5"}},"group1":{"- baz":"bas","+ baz":"bars","foo":"bar"},"- group2":{"abc":"12345"},"+ group3":{"fee":"100500"}}';
+    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","- setting2":"200","setting3":true,"- setting6":{"key":"value"},"+ setting4":"blah blah","+ setting5":{"key5":"value5"}},"group1":{"+ baz":"bars","- baz":"bas","foo":"bar"},"- group2":{"abc":"12345"},"+ group3":{"fee":"100500"}}';
 
     private $pathToFlatJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.json';
     private $pathToTreeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.json';
