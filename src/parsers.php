@@ -22,3 +22,8 @@ function yamlParser(string $pathToFile)
 {
     return Yaml::parse(getContent($pathToFile), true);
 }
+
+function iniParser(string $pathToFile)
+{
+    return parse_ini_string(getContent($pathToFile), true);
+}
