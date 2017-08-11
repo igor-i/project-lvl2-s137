@@ -22,6 +22,7 @@ class DifferTest extends TestCase
     private $pathToTreeBeforeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.json';
     private $pathToFlatBeforeYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.yaml';
     private $pathToTreeBeforeYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.yaml';
+    private $pathToTreeBeforeIniFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.ini';
     private $pathToFlatEqualAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-equal-after.json';
     private $pathToFlatMinusAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-minus-after.json';
     private $pathToFlatAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-plus-minus-after.json';
@@ -78,6 +79,14 @@ class DifferTest extends TestCase
         $this->assertEquals(
             self::EXPECTED_JSON,
             genDiff('json', $this->pathToTreeBeforeYamlFile, $this->pathToTreeAfterJsonFile)
+        );
+    }
+
+    public function testTreeIniDiff()
+    {
+        $this->assertEquals(
+            self::EXPECTED_JSON,
+            genDiff('json', $this->pathToTreeBeforeIniFile, $this->pathToTreeAfterJsonFile)
         );
     }
 
