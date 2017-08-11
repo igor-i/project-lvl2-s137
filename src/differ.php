@@ -7,13 +7,14 @@
 
 namespace Differ\differ;
 
+//require_once 'parsers.php';
 //require_once 'lib.php';
 
-use function Differ\parsers\yamlParser;
 use \Funct\Collection;
 
 use function \Differ\lib\defineFileFormat;
 use function \Differ\parsers\jsonParser;
+use function \Differ\parsers\yamlParser;
 
 //const FILE_FORMATS = ['json', 'yaml', 'ini'];
 const FILE_FORMATS = ['json', 'yaml'];
