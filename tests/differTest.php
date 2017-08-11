@@ -10,110 +10,84 @@ namespace Differ\Tests;
 //require_once 'src/differ.php';
 
 use \PHPUnit\Framework\TestCase;
+use function \Differ\differ\genDiff;
 
 class DifferTest extends TestCase
 {
-    private $testData = ["a" => 1, "b" => 2, "c" => 3, "d" => 4, "e" => 5];
 
-    public function testGetContentFromJsonFileToArray()
-    {
-        $pathToFile = 'fixtures' . DIRECTORY_SEPARATOR . 'data.json';
-        $this->assertEquals($this->testData, \Differ\differ\getContentFromFileToArray('json', $pathToFile));
-    }
+    const TEST_FIXTURES_DIR = 'fixtures';
 
-    public function testGetContentFromYamlFileToArray()
+    private $pathToJsonFile;
+    private $pathToYamlFile;
+    private $pathToEqualFile;
+    private $pathToPlusFile;
+    private $pathToPlusMinusFile;
+
+    public function setUp()
     {
-        $pathToFile = 'fixtures' . DIRECTORY_SEPARATOR . 'data.yaml';
-        $this->assertEquals($this->testData, \Differ\differ\getContentFromFileToArray('yaml', $pathToFile));
+        parent::setUp();
+        $this->pathToEqualFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'equal-test.json';
+        $this->pathToPlusFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'plus-test.json';
+        $this->pathToPlusMinusFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'plus-minus-test.json';
+        $this->pathToJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'test.json';
+        $this->pathToYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'test.yaml';
     }
 
     /**
-     * @dataProvider additionProvider1
-     * @param $argument
+     * @dataProvider additionProvider
+     * @param $expected
+     * @param $pathToFile2
      */
-    public function testGetContentFromFileToArrayException($argument)
+    public function testJsonDiff($expected, $pathToFile2)
+    {
+        $this->assertEquals($expected, genDiff('json', $this->pathToJsonFile, $pathToFile2));
+    }
+
+    public function additionProvider()
+    {
+        return [
+            [
+                ["a" => 1, "b" => 2, "c" => 3, "d" => 4],
+                [$this->pathToEqualFile]
+            ],
+            [
+                ["+ a" => 1, "+ b" => 2, "+ c" => 3, "+ d" => 4],
+                [$this->pathToPlusFile]
+            ],
+            [
+                ["a" => 1, "+ b" => "2", "- b" => 2, "- c" => 3, "+ d" => "new value", "- d" => 4, "+ new" => "value"],
+                [$this->pathToPlusMinusFile]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider addProvFileFormatException
+     * @param $pathToFile2
+     */
+    public function testFileFormatException($pathToFile2)
     {
         try {
-            \Differ\differ\getContentFromFileToArray($argument, 'somePathToFile');
+            genDiff('json', $this->pathToEqualFile, $pathToFile2);
             $this->fail('expected exception');
         } catch (\Exception $e) {
         }
     }
 
-    public function additionProvider1()
+    public function addProvFileFormatException()
     {
         return [
-            ['txt'],
-            ['']
+            ['somefile.txt'],
+            ['somefile']
         ];
     }
 
-    /**
-     * @dataProvider additionProvider2
-     * @param $trueResult
-     * @param $array1
-     * @param $array2
-     */
-    public function testArraysDiff($trueResult, $array1, $array2)
+    public function testGetContentException()
     {
-        $this->assertEquals($trueResult, \Differ\differ\arraysDiff($array1, $array2));
-    }
-
-    public function additionProvider2()
-    {
-        return [
-            [
-                [
-                    'first' => ''
-                ],
-                [
-                    'first' => ''
-                ],
-                [
-                    'first' => ''
-                ],
-            ],
-            [
-                [
-                    'first' => '1',
-                    '+ second' => 2,
-                    '- second' => '2'
-                ],
-                [
-                    'first' => '1',
-                    'second' => '2'
-                ],
-                [
-                    'first' => '1',
-                    'second' => 2
-                ]
-            ],
-            [
-                [
-                    'first' => '1',
-                    '+ second' => '2'
-                ],
-                [
-                    'first' => '1'
-                ],
-                [
-                    'first' => '1',
-                    'second' => '2'
-                ]
-            ],
-            [
-                [
-                    'first' => '1',
-                    '- second' => '2'
-                ],
-                [
-                    'first' => '1',
-                    'second' => '2'
-                ],
-                [
-                    'first' => '1'
-                ]
-            ]
-        ];
+        try {
+            genDiff('json', $this->pathToEqualFile, 'non-existent.json');
+            $this->fail('expected exception');
+        } catch (\Exception $e) {
+        }
     }
 }

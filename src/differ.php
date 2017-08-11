@@ -9,10 +9,11 @@ namespace Differ\differ;
 
 //require_once 'lib.php';
 
+use function Differ\parsers\yamlParser;
 use \Funct\Collection;
-use \Symfony\Component\Yaml\Yaml;
-use function \Differ\lib\getContent;
+
 use function \Differ\lib\defineFileFormat;
+use function \Differ\parsers\jsonParser;
 
 //const FILE_FORMATS = ['json', 'yaml', 'ini'];
 const FILE_FORMATS = ['json', 'yaml'];
@@ -67,10 +68,10 @@ function getContentFromFileToArray(string $fileFormat, string $pathToFile)
 {
     switch ($fileFormat) {
         case 'json':
-            $content = json_decode(getContent($pathToFile), true);
+            $content = jsonParser($pathToFile);
             break;
         case 'yaml':
-            $content = Yaml::parse(getContent($pathToFile), true);
+            $content = yamlParser($pathToFile);
             break;
 //        case 'ini':
 //            break;
