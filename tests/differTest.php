@@ -17,21 +17,11 @@ class DifferTest extends TestCase
 
     const TEST_FIXTURES_DIR = 'fixtures';
 
-    private $pathToJsonFile;
-    private $pathToYamlFile;
-    private $pathToEqualFile;
-    private $pathToPlusFile;
-    private $pathToPlusMinusFile;
-
-    public function setUp()
-    {
-        parent::setUp();
-        $this->pathToEqualFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'equal-test.json';
-        $this->pathToPlusFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'plus-test.json';
-        $this->pathToPlusMinusFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'plus-minus-test.json';
-        $this->pathToJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'test.json';
-        $this->pathToYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'test.yaml';
-    }
+    private $pathToJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'test.json';
+    private $pathToYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'test.yaml';
+    private $pathToEqualFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'equal-test.json';
+    private $pathToPlusFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'plus-test.json';
+    private $pathToPlusMinusFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'plus-minus-test.json';
 
     /**
      * @dataProvider additionProvider
@@ -43,20 +33,30 @@ class DifferTest extends TestCase
         $this->assertEquals($expected, genDiff('json', $this->pathToJsonFile, $pathToFile2));
     }
 
+    /**
+     * @dataProvider additionProvider
+     * @param $expected
+     * @param $pathToFile2
+     */
+    public function testYamlDiff($expected, $pathToFile2)
+    {
+        $this->assertEquals($expected, genDiff('json', $this->pathToYamlFile, $pathToFile2));
+    }
+
     public function additionProvider()
     {
         return [
             [
                 ["a" => 1, "b" => 2, "c" => 3, "d" => 4],
-                [$this->pathToEqualFile]
+                $this->pathToEqualFile
             ],
             [
                 ["+ a" => 1, "+ b" => 2, "+ c" => 3, "+ d" => 4],
-                [$this->pathToPlusFile]
+                $this->pathToPlusFile
             ],
             [
                 ["a" => 1, "+ b" => "2", "- b" => 2, "- c" => 3, "+ d" => "new value", "- d" => 4, "+ new" => "value"],
-                [$this->pathToPlusMinusFile]
+                $this->pathToPlusMinusFile
             ],
         ];
     }
