@@ -16,10 +16,12 @@ use function \Differ\lib\defineFileFormat;
 use function \Differ\parsers\jsonParser;
 use function \Differ\parsers\yamlParser;
 use function \Differ\parsers\iniParser;
+use function \Differ\reports\jsonReport;
+use function \Differ\reports\plainReport;
 
 const FILE_FORMATS = ['json', 'yaml', 'ini'];
 //const REPORT_FORMATS = ['plain', 'pretty', 'json'];
-const REPORT_FORMATS = ['json'];
+const REPORT_FORMATS = ['json', 'plain'];
 
 function genDiff(string $format, string $pathToFile1, string $pathToFile2)
 {
@@ -50,16 +52,7 @@ function genDiff(string $format, string $pathToFile1, string $pathToFile2)
         $result = arraysDiff($content1, $content2);
 
         //возвращаем результат в заданном формате
-        switch ($format) {
-//            case 'plain':
-//                break;
-//            case 'pretty':
-//                break;
-            case 'json':
-                return json_encode($result);
-            default:
-                throw new \Exception("report format '{$format}' is unsupported");
-        }
+        return outputReport($format, $result);
     } catch (\Exception $e) {
         return $e->getMessage() . PHP_EOL;
     }
@@ -111,4 +104,18 @@ function arraysDiff(array $array1, array $array2)
         }
         return $acc;
     }, []);
+}
+
+function outputReport($format, $result)
+{
+    switch ($format) {
+        case 'json':
+            return jsonReport($result);
+        case 'plain':
+            return plainReport($result);
+//            case 'pretty':
+//                break;
+        default:
+            throw new \Exception("report format '{$format}' is unsupported");
+    }
 }

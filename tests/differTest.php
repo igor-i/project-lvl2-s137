@@ -14,9 +14,18 @@ use function \Differ\differ\genDiff;
 
 class DifferTest extends TestCase
 {
+    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","setting3":true,"- setting4":"blah blah","- setting5":{"key5":"value5"},"+ setting2":"200","+ setting6":{"key":"value"}},"group1":{"foo":"bar","+ baz":"bas","- baz":"bars"},"- group3":{"fee":"100500"},"+ group2":{"abc":"12345"}}';
+    const EXPECTED_PLAIN = <<<PLAIN
+Property 'common.setting2' was removed
+Property 'common.setting6' was removed
+Property 'common.setting4' was added with value: 'blah blah'
+Property 'common.setting5' was added with value: 'complex value'
+Property group1.baz was changed. From 'bas' to 'bars'
+Property 'group2' was removed
+Property 'group3' was added with value: 'complex value'
+PLAIN;
 
     const TEST_FIXTURES_DIR = 'tests'  . DIRECTORY_SEPARATOR . 'fixtures';
-    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","setting3":true,"- setting4":"blah blah","- setting5":{"key5":"value5"},"+ setting2":"200","+ setting6":{"key":"value"}},"group1":{"foo":"bar","+ baz":"bas","- baz":"bars"},"- group3":{"fee":"100500"},"+ group2":{"abc":"12345"}}';
 
     private $pathToFlatBeforeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.json';
     private $pathToTreeBeforeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.json';
@@ -87,6 +96,14 @@ class DifferTest extends TestCase
         $this->assertEquals(
             self::EXPECTED_JSON,
             genDiff('json', $this->pathToTreeBeforeIniFile, $this->pathToTreeAfterJsonFile)
+        );
+    }
+
+    public function testPlainReport()
+    {
+        $this->assertEquals(
+            self::EXPECTED_PLAIN,
+            genDiff('plain', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterJsonFile)
         );
     }
 
