@@ -19,7 +19,8 @@
         "files": [
             "src/differ.php",
             "src/lib.php",
-            "src/parsers.php"
+            "src/parsers.php",
+            "src/reports.php"
         ],
         "psr-4": {
             "PhpPackage\\": "src/"
