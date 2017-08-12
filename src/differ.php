@@ -111,21 +111,4 @@ function arraysDiff(array $array1, array $array2)
         }
         return $acc;
     }, []);
-
-//    $union = Collection\union(array_keys($array1), array_keys($array2));
-//    return array_reduce($union, function ($acc, $key) use ($array1, $array2) {
-//        if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
-//            if ($array1[$key] === $array2[$key]) {
-//                $acc[$key] = $array1[$key];
-//            } else {
-//                $acc["+ {$key}"] = $array2[$key];
-//                $acc["- {$key}"] = $array1[$key];
-//            }
-//        } elseif (array_key_exists($key, $array1)) {
-//            $acc["- {$key}"] = $array1[$key];
-//        } else {
-//            $acc["+ {$key}"] = $array2[$key];
-//        }
-//        return $acc;
-//    }, []);
 }

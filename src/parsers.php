@@ -25,5 +25,16 @@ function yamlParser(string $pathToFile)
 
 function iniParser(string $pathToFile)
 {
-    return parse_ini_string(getContent($pathToFile), true);
+    $array = parse_ini_string(getContent($pathToFile), true, INI_SCANNER_RAW);
+
+    return array_reduce(array_keys($array), function ($acc, $section) use ($array) {
+        $hierarchy = explode('.', $section);
+        if (count($hierarchy) > 1) {
+            //TODO вместо этого надо придумать как рекурсивно собирать многоуровневые массивы
+            $acc[$hierarchy[0]][$hierarchy[1]] = $array[$section];
+        } else {
+            $acc[$section] = $array[$section];
+        }
+        return $acc;
+    }, []);
 }
