@@ -25,8 +25,7 @@ function yamlParser(string $pathToFile)
 
 function iniParser(string $pathToFile)
 {
-    $array = parse_ini_string(getContent($pathToFile), true, INI_SCANNER_RAW);
-
+    $array = parse_ini_string(getContent($pathToFile), true, INI_SCANNER_TYPED);
     return array_reduce(array_keys($array), function ($acc, $section) use ($array) {
         $hierarchy = explode('.', $section);
         if (count($hierarchy) > 1) {
