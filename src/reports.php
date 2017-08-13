@@ -22,7 +22,7 @@ function plainReport(array $result)
             if (($firstChar != '+') && ($firstChar != '-')) {
                 $parents[] = $key;
                 if (is_array($array[$key])) {
-                    $acc[] = $reportIter($array[$key], $parents);
+                    $acc = array_merge($acc, $reportIter($array[$key], $parents));
                 }
             } elseif ($firstChar == '+') {
                 $parents[] = mb_substr($key, 2);
