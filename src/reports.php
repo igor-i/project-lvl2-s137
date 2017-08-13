@@ -48,6 +48,5 @@ function plainReport(array $result)
         }, []);
     };
 
-//    return implode(PHP_EOL, Collection\compact($reportIter($result, [])));
-    return implode(PHP_EOL, $reportIter($result, []));
+    return implode(PHP_EOL, Collection\compact($reportIter($result, [])));
 }
