@@ -7,6 +7,8 @@
 
 namespace Differ\reports;
 
+use \Funct\Collection;
+
 function jsonReport(array $result)
 {
     return json_encode($result);
@@ -18,28 +20,33 @@ function plainReport(array $result)
         return array_reduce(array_keys($array), function ($acc, $key) use ($array, $parents, $reportIter) {
             $firstChar = mb_substr($key, 0, 1);
             if (($firstChar != '+') && ($firstChar != '-')) {
+                $parents[] = $key;
                 if (is_array($array[$key])) {
-                    $acc[] = $reportIter($array[$key], $parents . $key);
+                    $acc[] = $reportIter($array[$key], $parents);
                 }
-            } elseif ($firstChar != '+') {
+            } elseif ($firstChar == '+') {
+                $parents[] = mb_substr($key, 2);
+                $pathToRoot = implode('.', $parents);
                 $minusKey = "-" . mb_substr($key, 1);
                 if (array_key_exists($minusKey, $array)) {
-                    $acc[] = "Property '{$parents}.{$key}' was changed. From '{$array[$minusKey]}' to '{$array[$key]}'";
+                    $acc[] = "Property '{$pathToRoot}' was changed. From '{$array[$minusKey]}' to '{$array[$key]}'";
                 } else {
                     if (is_array($array[$key])) {
-                        $acc[] = "Property '{$parents}.{$key}' was added with value: 'complex value'";
+                        $acc[] = "Property '{$pathToRoot}' was added with value: 'complex value'";
                     } else {
-                        $acc[] = "Property '{$parents}.{$key}' was added with value: '{$array[$key]}'";
+                        $acc[] = "Property '{$pathToRoot}' was added with value: '{$array[$key]}'";
                     }
                 }
-            } elseif ($firstChar != '-') {
+            } elseif ($firstChar == '-') {
+                $parents[] = mb_substr($key, 2);
+                $pathToRoot = implode('.', $parents);
                 if (!array_key_exists("+" . mb_substr($key, 1), $array)) {
-                    $acc[] = "Property '{$parents}.{$key}' was removed";
+                    $acc[] = "Property '{$pathToRoot}' was removed";
                 }
             }
             return $acc;
         }, []);
     };
 
-    return implode(PHP_EOL, $reportIter($result, ''));
+    return implode(PHP_EOL, Collection\compact($reportIter($result, [])));
 }

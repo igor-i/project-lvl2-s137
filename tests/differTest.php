@@ -5,7 +5,7 @@
  * Time: 1:18
  */
 
-namespace Differ\Tests;
+namespace Differ\tests;
 
 //require_once 'src/differ.php';
 
