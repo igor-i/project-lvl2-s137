@@ -103,7 +103,7 @@ PLAIN;
     {
         $this->assertEquals(
             self::EXPECTED_PLAIN,
-            genDiff('plain', $this->pathToTreeAfterJsonFile, $this->pathToTreeBeforeJsonFile)
+            genDiff('plain', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterJsonFile)
         );
     }
 
