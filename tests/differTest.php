@@ -14,8 +14,7 @@ use function \Differ\differ\genDiff;
 
 class DifferTest extends TestCase
 {
-//    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","setting3":true,"- setting4":"blah blah","- setting5":{"key5":"value5"},"+ setting2":"200","+ setting6":{"key":"value"}},"group1":{"foo":"bar","+ baz":"bas","- baz":"bars"},"- group3":{"fee":"100500"},"+ group2":{"abc":"12345"}}';
-    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","- setting2":"200","setting3":true,"- setting6":{"key":"value"},"+ setting4":"blah blah","+ setting5":{"key5":"value5"}},"group1":{"- baz":"bas","+ baz":"bars","foo":"bar"},"- group2":{"abc":"12345"},"+ group3":{"fee":"100500"}}';
+    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","- setting2":"200","setting3":true,"- setting6":{"key":"value"},"+ setting4":"blah blah","+ setting5":{"key5":"value5"}},"group1":{"+ baz":"bars","- baz":"bas","foo":"bar"},"- group2":{"abc":"12345"},"+ group3":{"fee":"100500"}}';
     const EXPECTED_PLAIN = <<<PLAIN
 Property 'common.setting2' was removed
 Property 'common.setting6' was removed
