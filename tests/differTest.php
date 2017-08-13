@@ -136,4 +136,13 @@ PLAIN;
         } catch (\Exception $e) {
         }
     }
+
+    public function testReportFormatException()
+    {
+        try {
+            genDiff('wrong-format', $this->pathToFlatBeforeJsonFile, $this->pathToFlatEqualAfterJsonFile);
+            $this->fail('expected exception');
+        } catch (\Exception $e) {
+        }
+    }
 }
