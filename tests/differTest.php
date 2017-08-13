@@ -14,7 +14,8 @@ use function \Differ\differ\genDiff;
 
 class DifferTest extends TestCase
 {
-    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","setting3":true,"- setting4":"blah blah","- setting5":{"key5":"value5"},"+ setting2":"200","+ setting6":{"key":"value"}},"group1":{"foo":"bar","+ baz":"bas","- baz":"bars"},"- group3":{"fee":"100500"},"+ group2":{"abc":"12345"}}';
+//    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","setting3":true,"- setting4":"blah blah","- setting5":{"key5":"value5"},"+ setting2":"200","+ setting6":{"key":"value"}},"group1":{"foo":"bar","+ baz":"bas","- baz":"bars"},"- group3":{"fee":"100500"},"+ group2":{"abc":"12345"}}';
+    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","- setting2":"200","setting3":true,"- setting6":{"key":"value"},"+ setting4":"blah blah","+ setting5":{"key5":"value5"}},"group1":{"- baz":"bas","+ baz":"bars","foo":"bar"},"- group2":{"abc":"12345"},"+ group3":{"fee":"100500"}}';
     const EXPECTED_PLAIN = <<<PLAIN
 Property 'common.setting2' was removed
 Property 'common.setting6' was removed
@@ -30,12 +31,12 @@ PLAIN;
     private $pathToFlatBeforeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.json';
     private $pathToTreeBeforeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.json';
     private $pathToFlatBeforeYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.yaml';
-    private $pathToTreeBeforeYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.yaml';
-    private $pathToTreeBeforeIniFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.ini';
     private $pathToFlatEqualAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-equal-after.json';
     private $pathToFlatMinusAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-minus-after.json';
     private $pathToFlatAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-plus-minus-after.json';
     private $pathToTreeAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-after.json';
+    private $pathToTreeAfterYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-after.yaml';
+    private $pathToTreeAfterIniFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-after.ini';
 
     /**
      * @dataProvider additionProviderFlat
@@ -87,7 +88,7 @@ PLAIN;
     {
         $this->assertEquals(
             self::EXPECTED_JSON,
-            genDiff('json', $this->pathToTreeBeforeYamlFile, $this->pathToTreeAfterJsonFile)
+            genDiff('json', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterYamlFile)
         );
     }
 
@@ -95,7 +96,7 @@ PLAIN;
     {
         $this->assertEquals(
             self::EXPECTED_JSON,
-            genDiff('json', $this->pathToTreeBeforeIniFile, $this->pathToTreeAfterJsonFile)
+            genDiff('json', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterIniFile)
         );
     }
 
@@ -103,7 +104,7 @@ PLAIN;
     {
         $this->assertEquals(
             self::EXPECTED_PLAIN,
-            genDiff('plain', $this->pathToTreeAfterJsonFile, $this->pathToTreeBeforeJsonFile)
+            genDiff('plain', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterJsonFile)
         );
     }
 
