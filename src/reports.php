@@ -25,29 +25,31 @@ function outputReport(string $format, array $ast)
 
 function jsonReport(array $ast)
 {
-    $output = array_reduce($ast, function ($acc, $node) {
-        switch ($node['type']) {
-            case 'nested':
-                $acc[$node['node']] = jsonReport($node['children']);
-                break;
-            case 'unchanged':
-                $acc[$node['node']] = $node['to'];
-                break;
-            case 'added':
-                $acc["+ {$node['node']}"] = $node['to'];
-                break;
-            case 'removed':
-                $acc["- {$node['node']}"] = $node['from'];
-                break;
-            case 'changed':
-                $acc["+ {$node['node']}"] = $node['to'];
-                $acc["- {$node['node']}"] = $node['from'];
-                break;
-        }
-        return $acc;
-    }, []);
+    $iter = function ($ast) use (&$iter) {
+        return array_reduce($ast, function ($acc, $node) use ($iter) {
+            switch ($node['type']) {
+                case 'nested':
+                    $acc[$node['node']] = $iter($node['children']);
+                    break;
+                case 'unchanged':
+                    $acc[$node['node']] = $node['to'];
+                    break;
+                case 'added':
+                    $acc["+ {$node['node']}"] = $node['to'];
+                    break;
+                case 'removed':
+                    $acc["- {$node['node']}"] = $node['from'];
+                    break;
+                case 'changed':
+                    $acc["+ {$node['node']}"] = $node['to'];
+                    $acc["- {$node['node']}"] = $node['from'];
+                    break;
+            }
+            return $acc;
+        }, []);
+    };
 
-    return json_encode($output);
+    return json_encode($iter($ast));
 }
 
 function plainReport(array $ast)
