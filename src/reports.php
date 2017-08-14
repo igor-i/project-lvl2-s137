@@ -116,7 +116,7 @@ function prettyReport(array $ast)
                     if (is_array($node['to'])) {
                         $acc .= $printArray($node['to'], $level);
                     } else {
-                        $acc .= $node['to'] . PHP_EOL;
+                        $acc .= "\"{$node['to']}\"" . PHP_EOL;
                     }
                     break;
                 case 'added':
@@ -124,7 +124,7 @@ function prettyReport(array $ast)
                     if (is_array($node['to'])) {
                         $acc .= $printArray($node['to'], $level);
                     } else {
-                        $acc .= $node['to'] . PHP_EOL;
+                        $acc .= "\"{$node['to']}\"" . PHP_EOL;
                     }
                     break;
                 case 'removed':
@@ -132,7 +132,7 @@ function prettyReport(array $ast)
                     if (is_array($node['from'])) {
                         $acc .= $printArray($node['from'], $level);
                     } else {
-                        $acc .= $node['from'] . PHP_EOL;
+                        $acc .= "\"{$node['from']}\"" . PHP_EOL;
                     }
                     break;
                 case 'changed':
@@ -140,13 +140,13 @@ function prettyReport(array $ast)
                     if (is_array($node['to'])) {
                         $acc .= $printArray($node['to'], $level);
                     } else {
-                        $acc .= $node['to'] . PHP_EOL;
+                        $acc .= "\"{$node['to']}\"" . PHP_EOL;
                     }
                     $acc .= "- \"{$node['node']}\": ";
                     if (is_array($node['from'])) {
                         $acc .= $printArray($node['from'], $level);
                     } else {
-                        $acc .= $node['from'] . PHP_EOL;
+                        $acc .= "\"{$node['from']}\"" . PHP_EOL;
                     }
                     break;
             }
