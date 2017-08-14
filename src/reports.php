@@ -7,8 +7,6 @@
 
 namespace Differ\reports;
 
-//use \Funct\Collection;
-
 function outputReport(string $format, array $ast)
 {
     switch ($format) {
@@ -56,64 +54,32 @@ function plainReport(array $ast)
 {
     $iter = function ($ast, $parents) use (&$iter) {
         return array_reduce($ast, function ($acc, $node) use ($iter, $parents) {
+            $parents[] = $node['node'];
+            $pathToNode = implode('.', $parents);
             switch ($node['type']) {
                 case 'nested':
-                    $acc = array_merge($acc, $iter($node['children'], "{$parents}.{$node['node']}"));
+                    $acc = array_merge($acc, $iter($node['children'], "{$pathToNode}"));
                     break;
                 case 'added':
                     if (is_array($node['to'])) {
-                        $acc[] = "Property '{$parents}.{$node['node']}' was added with value: 'complex value'";
+                        $acc[] = "Property '{$pathToNode}' was added with value: 'complex value'";
                     } else {
-                        $acc[] = "Property '{$parents}.{$node['node']}' was added with value: '{$node['to']}'";
+                        $acc[] = "Property '{$pathToNode}' was added with value: '{$node['to']}'";
                     }
                     break;
                 case 'removed':
-                    $acc[] = "Property '{$parents}.{$node['node']}' was removed";
+                    $acc[] = "Property '{$pathToNode}' was removed";
                     break;
                 case 'changed':
                     $acc[] =
-                        "Property '{$parents}.{$node['node']}' was changed. From '{$node['from']}' to '{$node['to']}'";
+                        "Property '{$pathToNode}' was changed. From '{$node['from']}' to '{$node['to']}'";
                     break;
             }
             return $acc;
         }, []);
     };
 
-    return implode(PHP_EOL, $iter($ast, ''));
-
-//    $iter = function ($array, $parents) use (&$reportIter) {
-//        return array_reduce(array_keys($array), function ($acc, $key) use ($array, $parents, $reportIter) {
-//            $firstChar = mb_substr($key, 0, 1);
-//            if (($firstChar != '+') && ($firstChar != '-')) {
-//                $parents[] = $key;
-//                if (is_array($array[$key])) {
-//                    $acc = array_merge($acc, $reportIter($array[$key], $parents));
-//                }
-//            } elseif ($firstChar == '+') {
-//                $parents[] = mb_substr($key, 2);
-//                $pathToRoot = implode('.', $parents);
-//                $minusKey = "-" . mb_substr($key, 1);
-//                if (array_key_exists($minusKey, $array)) {
-//                    $acc[] = "Property '{$pathToRoot}' was changed. From '{$array[$minusKey]}' to '{$array[$key]}'";
-//                } else {
-//                    if (is_array($array[$key])) {
-//                        $acc[] = "Property '{$pathToRoot}' was added with value: 'complex value'";
-//                    } else {
-//                        $acc[] = "Property '{$pathToRoot}' was added with value: '{$array[$key]}'";
-//                    }
-//                }
-//            } elseif ($firstChar == '-') {
-//                $parents[] = mb_substr($key, 2);
-//                $pathToRoot = implode('.', $parents);
-//                if (!array_key_exists("+" . mb_substr($key, 1), $array)) {
-//                    $acc[] = "Property '{$pathToRoot}' was removed";
-//                }
-//            }
-//            return $acc;
-//        }, []);
-//    };
-
-//    return implode(PHP_EOL, Collection\compact($reportIter($result, [])));
+    return implode(PHP_EOL, $iter($ast, []));
 }
 
 function prettyReport(array $ast)

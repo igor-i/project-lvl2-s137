@@ -124,7 +124,7 @@ PRETTY;
     {
         $this->assertEquals(
             self::EXPECTED_PRETTY,
-            genDiff('plain', $this->getFixturePath('tree-before.json'), $this->getFixturePath('tree-after.json'))
+            genDiff('pretty', $this->getFixturePath('tree-before.json'), $this->getFixturePath('tree-after.json'))
         );
     }
 
