@@ -169,5 +169,5 @@ function prettyReport(array $ast)
 
     $output = $iter($ast, 0);
 
-    return '{' . PHP_EOL . $output . PHP_EOL . '}';
+    return '{' . PHP_EOL . $output . '}';
 }
