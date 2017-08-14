@@ -7,7 +7,7 @@
 
 namespace Differ\reports;
 
-use \Funct\Collection;
+//use \Funct\Collection;
 
 function outputReport(string $format, array $ast)
 {

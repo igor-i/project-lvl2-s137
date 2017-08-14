@@ -11,20 +11,20 @@ namespace Differ\parsers;
 
 use \Symfony\Component\Yaml\Yaml;
 
-function parseContent($format, $content)
+function parseContent(string $format, string $content)
 {
     switch ($format) {
         case 'json':
-            $ast = jsonParser($content);
+            $array = jsonParser($content);
             break;
         case 'yaml':
-            $ast = yamlParser($content);
+            $array = yamlParser($content);
             break;
         default:
             throw new \Exception("file format '{$format}' is unsupported");
     }
 
-    return $ast;
+    return $array;
 }
 
 

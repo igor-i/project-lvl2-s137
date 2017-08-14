@@ -82,7 +82,7 @@ PRETTY;
     {
         return [
             [
-                '[{"type":"unchanged","node":"a","from":1,"to":1},{"type":"unchanged","node":"b","from":2,"to":2},{"type":"unchanged","node":"c","from":3,"to":3},{"type":"unchanged","node":"d","from":4,"to":4}]',
+                '{"a":1,"b":2,"c":3,"d":4}',
                 $this->getFixturePath('flat-equal-after.json')
             ],
             [

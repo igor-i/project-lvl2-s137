@@ -86,13 +86,13 @@ function arraysDiff(array $array1, array $array2)
                 'type' => 'removed',
                 'node' => $key,
                 'from' => $array1[$key],
-                'to'
+                'to' => ''
             ];
         } else {
             $acc[] = [
                 'type' => 'added',
                 'node' => $key,
-                'from',
+                'from' => '',
                 'to' => $array2[$key]
             ];
         }
