@@ -97,7 +97,7 @@ function prettyReport(array $ast)
         $printArray = function (array $array, $level) use ($printIndent) {
             $string = '{' . PHP_EOL;
             foreach ($array as $key => $value) {
-                $string .= $printIndent((int)$level + 1) . "  \"{$key}\": {$value}" . PHP_EOL;
+                $string .= $printIndent((int)$level + 1) . "  \"{$key}\": \"{$value}\"" . PHP_EOL;
             }
             $string .= $printIndent($level) . '  }' . PHP_EOL;
             return $string;
