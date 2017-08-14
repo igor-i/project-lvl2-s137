@@ -58,7 +58,8 @@ function plainReport(array $ast)
             $pathToNode = implode('.', $parents);
             switch ($node['type']) {
                 case 'nested':
-                    $acc = array_merge($acc, $iter($node['children'], "{$pathToNode}"));
+                    $parents[] = $node['node'];
+                    $acc = array_merge($acc, $iter($node['children'], $parents));
                     break;
                 case 'added':
                     if (is_array($node['to'])) {
