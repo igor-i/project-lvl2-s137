@@ -40,8 +40,8 @@ PLAIN;
         }
     }
     "group1": {
-      - "baz": "bas"
       + "baz": "bars"
+      - "baz": "bas"
         "foo": "bar"
     }
   - "group2": {
