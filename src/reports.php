@@ -86,18 +86,18 @@ function prettyReport(array $ast)
 {
     $iter = function (array $branch, $level) use (&$iter) {
 
-        $printIndent = function (integer $level) {
+        $printIndent = function ($level) {
             $string = '';
-            for ($i = $level * 4 + 2; $i > 0; $i--) {
+            for ($i = (int)$level * 4 + 2; $i > 0; $i--) {
                 $string .= ' ';
             }
             return $string;
         };
 
-        $printArray = function (array $array, integer $level) use ($printIndent) {
+        $printArray = function (array $array, $level) use ($printIndent) {
             $string = '{' . PHP_EOL;
             foreach ($array as $key => $value) {
-                $string .= $printIndent($level + 1) . "  \"{$key}\": {$value}" . PHP_EOL;
+                $string .= $printIndent((int)$level + 1) . "  \"{$key}\": {$value}" . PHP_EOL;
             }
             $string .= $printIndent($level) . '  }' . PHP_EOL;
             return $string;
@@ -108,7 +108,7 @@ function prettyReport(array $ast)
             switch ($node['type']) {
                 case 'nested':
                     $acc .= "  \"{$node['node']}\": {" . PHP_EOL;
-                    $acc .= $iter($node['children'], $level + 1);
+                    $acc .= $iter($node['children'], (int)$level + 1);
                     $acc .= $printIndent($level) . '  }' . PHP_EOL;
                     break;
                 case 'unchanged':
