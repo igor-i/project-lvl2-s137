@@ -69,7 +69,8 @@ function plainReport(array $ast)
                     $acc[] = "Property '{$parents}.{$node['node']}' was removed";
                     break;
                 case 'changed':
-                    $acc[] = "Property '{$parents}.{$node['node']}' was changed. From '{$node['from']}' to '{$node['to']}'";
+                    $acc[] =
+                        "Property '{$parents}.{$node['node']}' was changed. From '{$node['from']}' to '{$node['to']}'";
                     break;
             }
             return $acc;
