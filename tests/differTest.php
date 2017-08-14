@@ -53,7 +53,7 @@ PLAIN;
 }
 PRETTY;
 
-    private function getFixturePath($fixtureName)
+    public function getFixturePath($fixtureName)
     {
         return self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . $fixtureName;
     }
