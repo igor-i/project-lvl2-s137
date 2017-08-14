@@ -98,9 +98,9 @@ function prettyReport(array $ast)
             if (is_bool($variable)) {
                 switch ($variable) {
                     case true:
-                        return true;
+                        return 'true';
                     case false:
-                        return false;
+                        return 'false';
                 }
             }
             return "\"{$variable}\"";
