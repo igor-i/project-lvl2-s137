@@ -30,7 +30,7 @@ function parseContent(string $format, string $content)
 
 function jsonParser(string $content)
 {
-    return json_decode($content, true, 512, JSON_OBJECT_AS_ARRAY);
+    return json_decode($content, true);
 }
 
 function yamlParser(string $content)

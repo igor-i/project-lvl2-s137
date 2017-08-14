@@ -64,7 +64,7 @@ function arraysDiff(array $array1, array $array2)
                     'children' => arraysDiff($array1[$key], $array2[$key])
                 ];
             } else {
-                if ($array1[$key] === $array2[$key]) {
+                if ($array1[$key] == $array2[$key]) {
                     $acc[] = [
                         'type' => 'unchanged',
                         'node' => $key,
