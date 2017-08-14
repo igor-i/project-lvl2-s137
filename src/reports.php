@@ -142,6 +142,7 @@ function prettyReport(array $ast)
                     } else {
                         $acc .= "\"{$node['to']}\"" . PHP_EOL;
                     }
+                    $acc .= $printIndent($level);
                     $acc .= "- \"{$node['node']}\": ";
                     if (is_array($node['from'])) {
                         $acc .= $printArray($node['from'], $level);
@@ -150,7 +151,6 @@ function prettyReport(array $ast)
                     }
                     break;
             }
-            $acc .= $printIndent($level) . '  ';
             return $acc;
         }, '');
     };
