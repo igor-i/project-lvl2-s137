@@ -94,15 +94,6 @@ function prettyReport(array $ast)
             return $string;
         };
 
-        $printArray = function (array $array, $level) use ($printIndent) {
-            $string = '{' . PHP_EOL;
-            foreach ($array as $key => $value) {
-                $string .= $printIndent((int)$level + 1) . "  \"{$key}\": \"{$value}\"" . PHP_EOL;
-            }
-            $string .= $printIndent($level) . '  }' . PHP_EOL;
-            return $string;
-        };
-
         $printBool = function ($variable) {
             if (is_bool($variable)) {
                 switch ($variable) {
@@ -112,7 +103,16 @@ function prettyReport(array $ast)
                         return false;
                 }
             }
-            return $variable;
+            return "\"{$variable}\"";
+        };
+
+        $printArray = function (array $array, $level) use ($printIndent, $printBool) {
+            $string = '{' . PHP_EOL;
+            foreach ($array as $key => $value) {
+                $string .= $printIndent((int)$level + 1) . "  \"{$key}\": " . $printBool($value) . PHP_EOL;
+            }
+            $string .= $printIndent($level) . '  }' . PHP_EOL;
+            return $string;
         };
 
         return array_reduce($branch, function ($acc, $node) use ($level, $iter, $printIndent, $printArray, $printBool) {
@@ -128,7 +128,7 @@ function prettyReport(array $ast)
                     if (is_array($node['to'])) {
                         $acc .= $printArray($node['to'], $level);
                     } else {
-                        $acc .= "\"{$printBool($node['to'])}\"" . PHP_EOL;
+                        $acc .= $printBool($node['to']) . PHP_EOL;
                     }
                     break;
                 case 'added':
@@ -136,7 +136,7 @@ function prettyReport(array $ast)
                     if (is_array($node['to'])) {
                         $acc .= $printArray($node['to'], $level);
                     } else {
-                        $acc .= "\"{$printBool($node['to'])}\"" . PHP_EOL;
+                        $acc .= $printBool($node['to']) . PHP_EOL;
                     }
                     break;
                 case 'removed':
@@ -144,7 +144,7 @@ function prettyReport(array $ast)
                     if (is_array($node['from'])) {
                         $acc .= $printArray($node['from'], $level);
                     } else {
-                        $acc .= "\"{$printBool($node['from'])}\"" . PHP_EOL;
+                        $acc .= $printBool($node['from']) . PHP_EOL;
                     }
                     break;
                 case 'changed':
@@ -152,14 +152,14 @@ function prettyReport(array $ast)
                     if (is_array($node['to'])) {
                         $acc .= $printArray($node['to'], $level);
                     } else {
-                        $acc .= "\"{$printBool($node['to'])}\"" . PHP_EOL;
+                        $acc .= $printBool($node['to']) . PHP_EOL;
                     }
                     $acc .= $printIndent($level);
                     $acc .= "- \"{$node['node']}\": ";
                     if (is_array($node['from'])) {
                         $acc .= $printArray($node['from'], $level);
                     } else {
-                        $acc .= "\"{$printBool($node['from'])}\"" . PHP_EOL;
+                        $acc .= $printBool($node['from']) . PHP_EOL;
                     }
                     break;
             }
