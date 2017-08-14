@@ -13,72 +13,43 @@ namespace Differ\differ;
 use \Funct\Collection;
 
 use function \Differ\lib\defineFileFormat;
-use function \Differ\parsers\jsonParser;
-use function \Differ\parsers\yamlParser;
-use function \Differ\parsers\iniParser;
-use function \Differ\reports\jsonReport;
-use function \Differ\reports\plainReport;
+use function \Differ\lib\getContent;
+use function \Differ\parsers\parseContent;
+use function \Differ\reports\outputReport;
 
-const FILE_FORMATS = ['json', 'yaml', 'ini'];
+const FILE_FORMATS = ['json', 'yaml'];
 //const REPORT_FORMATS = ['plain', 'pretty', 'json'];
 const REPORT_FORMATS = ['json', 'plain'];
 
-function genDiff(string $format, string $pathToFile1, string $pathToFile2)
+function genDiff(string $outputFormat, string $pathToFile1, string $pathToFile2)
 {
     try {
-        //определяем формат по расширению файла
-        $fileFormat1 = defineFileFormat($pathToFile1);
-        $fileFormat2 = defineFileFormat($pathToFile2);
+        $inputFileFormat1 = defineFileFormat($pathToFile1);
+        $inputFileFormat2 = defineFileFormat($pathToFile2);
 
-        if (!array_key_exists($fileFormat1, array_flip(FILE_FORMATS))) {
-            throw new \Exception("file format '{$fileFormat1}' is unsupported");
+        if (!array_key_exists($inputFileFormat1, array_flip(FILE_FORMATS))) {
+            throw new \Exception("file format '{$inputFileFormat1}' is unsupported");
         }
-        if (!array_key_exists($fileFormat2, array_flip(FILE_FORMATS))) {
-            throw new \Exception("file format '{$fileFormat2}' is unsupported");
+        if (!array_key_exists($inputFileFormat2, array_flip(FILE_FORMATS))) {
+            throw new \Exception("file format '{$inputFileFormat2}' is unsupported");
         }
 
-        //достаём контент в array
-        $content1 = getContentFromFileToArray($fileFormat1, $pathToFile1);
-        $content2 = getContentFromFileToArray($fileFormat2, $pathToFile2);
+        $content1 = parseContent($inputFileFormat1, getContent($pathToFile1));
+        $content2 = parseContent($inputFileFormat2, getContent($pathToFile1));
 
         if (!is_array($content1)) {
-            throw new \Exception("failed to convert data from a file '{$pathToFile1}' into an array");
+            throw new \Exception("file '{$pathToFile1}' does not contain {$inputFileFormat1} data");
         }
         if (!is_array($content2)) {
-            throw new \Exception("failed to convert data from a file '{$pathToFile2}' into an array");
+            throw new \Exception("file '{$pathToFile2}' does not contain {$inputFileFormat2} data");
         }
 
-        //сравниваем
-        $result = arraysDiff($content1, $content2);
+        $ast = arraysDiff($content1, $content2);
 
-        //возвращаем результат в заданном формате
-        return outputReport($format, $result);
+        return outputReport($outputFormat, $ast);
     } catch (\Exception $e) {
         return $e->getMessage() . PHP_EOL;
     }
-}
-
-function getContentFromFileToArray(string $fileFormat, string $pathToFile)
-{
-    switch ($fileFormat) {
-        case 'json':
-            $content = jsonParser($pathToFile);
-            break;
-        case 'yaml':
-            $content = yamlParser($pathToFile);
-            break;
-        case 'ini':
-            $content = iniParser($pathToFile);
-            break;
-        default:
-            throw new \Exception("file format '{$fileFormat}' is unsupported");
-    }
-
-    if (!is_array($content)) {
-        throw new \Exception("file '{$pathToFile}' does not contain {$fileFormat} data");
-    }
-
-    return $content;
 }
 
 function arraysDiff(array $array1, array $array2)
@@ -88,34 +59,43 @@ function arraysDiff(array $array1, array $array2)
     return array_reduce($union, function ($acc, $key) use ($array1, $array2) {
         if (array_key_exists($key, $array1) && array_key_exists($key, $array2)) {
             if (is_array($array1[$key]) && is_array($array2[$key])) {
-                $acc[$key] = arraysDiff($array1[$key], $array2[$key]);
+                $acc[] = [
+                    'type' => 'nested',
+                    'node' => $key,
+                    'children' => arraysDiff($array1[$key], $array2[$key])
+                ];
             } else {
                 if ($array1[$key] === $array2[$key]) {
-                    $acc[$key] = $array1[$key];
+                    $acc[] = [
+                        'type' => 'unchanged',
+                        'node' => $key,
+                        'from' => $array2[$key],
+                        'to' => $array2[$key]
+                    ];
                 } else {
-                    $acc["+ {$key}"] = $array2[$key];
-                    $acc["- {$key}"] = $array1[$key];
+                    $acc[] = [
+                        'type' => 'changed',
+                        'node' => $key,
+                        'from' => $array1[$key],
+                        'to' => $array2[$key]
+                    ];
                 }
             }
         } elseif (array_key_exists($key, $array1)) {
-            $acc["- {$key}"] = $array1[$key];
+            $acc[] = [
+                'type' => 'removed',
+                'node' => $key,
+                'from' => $array1[$key],
+                'to'
+            ];
         } else {
-            $acc["+ {$key}"] = $array2[$key];
+            $acc[] = [
+                'type' => 'added',
+                'node' => $key,
+                'from',
+                'to' => $array2[$key]
+            ];
         }
         return $acc;
     }, []);
-}
-
-function outputReport($format, $result)
-{
-    switch ($format) {
-        case 'json':
-            return jsonReport($result);
-        case 'plain':
-            return plainReport($result);
-//            case 'pretty':
-//                break;
-        default:
-            throw new \Exception("report format '{$format}' is unsupported");
-    }
 }

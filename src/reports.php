@@ -9,6 +9,20 @@ namespace Differ\reports;
 
 use \Funct\Collection;
 
+function outputReport(string $format, array $ast)
+{
+    switch ($format) {
+        case 'json':
+            return jsonReport($ast);
+        case 'plain':
+            return plainReport($ast);
+        case 'pretty':
+            return prettyReport($ast);
+        default:
+            throw new \Exception("report format '{$format}' is unsupported");
+    }
+}
+
 function jsonReport(array $result)
 {
     return json_encode($result);
@@ -49,4 +63,82 @@ function plainReport(array $result)
     };
 
     return implode(PHP_EOL, Collection\compact($reportIter($result, [])));
+}
+
+function prettyReport(array $ast)
+{
+    $iter = function (array $branch, integer $level) use (&$iter) {
+
+        $printIndent = function (integer $level) {
+            $string = '';
+            for ($i = $level * 4 + 2; $i > 0; $i--) {
+                $string .= ' ';
+            }
+            return $string;
+        };
+
+        $printArray = function (array $array, integer $level) use ($printIndent) {
+            $string = '{' . PHP_EOL;
+            foreach ($array as $key => $value) {
+                $string .= $printIndent($level + 1) . "  \"{$key}\": {$value}" . PHP_EOL;
+            }
+            $string .= $printIndent($level) . '  }' . PHP_EOL;
+            return $string;
+        };
+
+        return array_reduce($branch, function ($acc, $node) use ($level, $iter, $printIndent, $printArray) {
+            $acc .= $printIndent($level);
+            switch ($node['type']) {
+                case 'nested':
+                    $acc .= "  \"{$node['node']}\": {" . PHP_EOL;
+                    $acc .= $iter($node['children'], $level + 1);
+                    $acc .= $printIndent($level) . '  }' . PHP_EOL;
+                    break;
+                case 'unchanged':
+                    $acc .= "  \"{$node['node']}\": ";
+                    if (is_array($node['to'])) {
+                        $acc .= $printArray($node['to'], $level);
+                    } else {
+                        $acc .= $node['to'] . PHP_EOL;
+                    }
+                    break;
+                case 'added':
+                    $acc .= "+ \"{$node['node']}\": ";
+                    if (is_array($node['to'])) {
+                        $acc .= $printArray($node['to'], $level);
+                    } else {
+                        $acc .= $node['to'] . PHP_EOL;
+                    }
+                    break;
+                case 'removed':
+                    $acc .= "- \"{$node['node']}\": ";
+                    if (is_array($node['from'])) {
+                        $acc .= $printArray($node['from'], $level);
+                    } else {
+                        $acc .= $node['from'] . PHP_EOL;
+                    }
+                    break;
+                case 'changed':
+                    $acc .= "+ \"{$node['node']}\": ";
+                    if (is_array($node['to'])) {
+                        $acc .= $printArray($node['to'], $level);
+                    } else {
+                        $acc .= $node['to'] . PHP_EOL;
+                    }
+                    $acc .= "- \"{$node['node']}\": ";
+                    if (is_array($node['from'])) {
+                        $acc .= $printArray($node['from'], $level);
+                    } else {
+                        $acc .= $node['from'] . PHP_EOL;
+                    }
+                    break;
+            }
+            $acc .= $printIndent($level) . '  ';
+            return $acc;
+        }, []);
+    };
+
+    $output = $iter($ast, 0);
+
+    return '{' . PHP_EOL . $output . PHP_EOL . '}';
 }

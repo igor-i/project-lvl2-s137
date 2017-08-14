@@ -14,6 +14,7 @@ use function \Differ\differ\genDiff;
 
 class DifferTest extends TestCase
 {
+    const TEST_FIXTURES_DIR = 'tests'  . DIRECTORY_SEPARATOR . 'fixtures';
     const EXPECTED_JSON = '{"common":{"setting1":"Value 1","- setting2":"200","setting3":true,"- setting6":{"key":"value"},"+ setting4":"blah blah","+ setting5":{"key5":"value5"}},"group1":{"+ baz":"bars","- baz":"bas","foo":"bar"},"- group2":{"abc":"12345"},"+ group3":{"fee":"100500"}}';
     const EXPECTED_PLAIN = <<<PLAIN
 Property 'common.setting2' was removed
@@ -24,18 +25,38 @@ Property 'group1.baz' was changed. From 'bas' to 'bars'
 Property 'group2' was removed
 Property 'group3' was added with value: 'complex value'
 PLAIN;
+    const EXPECTED_PRETTY = <<<PRETTY
+{
+    "common": {
+        "setting1": "Value 1"
+      - "setting2": "200"
+        "setting3": true
+      - "setting6": {
+            "key": "value"
+        }
+      + "setting4": "blah blah"
+      + "setting5": {
+            "key5": "value5"
+        }
+    }
+    "group1": {
+      - "baz": "bas"
+      + "baz": "bars"
+        "foo": "bar"
+    }
+  - "group2": {
+        "abc": "12345"
+    }
+  + "group3": {
+        "fee": "100500"
+    }
+}
+PRETTY;
 
-    const TEST_FIXTURES_DIR = 'tests'  . DIRECTORY_SEPARATOR . 'fixtures';
-
-    private $pathToFlatBeforeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.json';
-    private $pathToTreeBeforeJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-before.json';
-    private $pathToFlatBeforeYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-before.yaml';
-    private $pathToFlatEqualAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-equal-after.json';
-    private $pathToFlatMinusAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-minus-after.json';
-    private $pathToFlatAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'flat-plus-minus-after.json';
-    private $pathToTreeAfterJsonFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-after.json';
-    private $pathToTreeAfterYamlFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-after.yaml';
-    private $pathToTreeAfterIniFile = self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . 'tree-after.ini';
+    private function getFixturePath($fixtureName)
+    {
+        return self::TEST_FIXTURES_DIR . DIRECTORY_SEPARATOR . $fixtureName;
+    }
 
     /**
      * @dataProvider additionProviderFlat
@@ -44,7 +65,7 @@ PLAIN;
      */
     public function testFlatJsonDiff($expected, $pathToFile)
     {
-        $this->assertEquals($expected, genDiff('json', $this->pathToFlatBeforeJsonFile, $pathToFile));
+        $this->assertEquals($expected, genDiff('json', $this->getFixturePath('flat-before.json'), $pathToFile));
     }
 
     /**
@@ -54,7 +75,7 @@ PLAIN;
      */
     public function testFlatYamlDiff($expected, $pathToFile)
     {
-        $this->assertEquals($expected, genDiff('json', $this->pathToFlatBeforeYamlFile, $pathToFile));
+        $this->assertEquals($expected, genDiff('json', $this->getFixturePath('flat-before.yaml'), $pathToFile));
     }
 
     public function additionProviderFlat()
@@ -62,15 +83,15 @@ PLAIN;
         return [
             [
                 '{"a":1,"b":2,"c":3,"d":4}',
-                $this->pathToFlatEqualAfterJsonFile
+                $this->$this->getFixturePath('flat-equal-after.json')
             ],
             [
                 '{"- a":1,"- b":2,"- c":3,"- d":4}',
-                $this->pathToFlatMinusAfterJsonFile
+                $this->$this->getFixturePath('flat-minus-after.json')
             ],
             [
                 '{"a":1,"+ b":"2","- b":2,"- c":3,"+ d":"new value","- d":4,"+ new":"value"}',
-                $this->pathToFlatAfterJsonFile
+                $this->$this->getFixturePath('flat-plus-minus-after.json')
             ],
         ];
     }
@@ -79,7 +100,7 @@ PLAIN;
     {
         $this->assertEquals(
             self::EXPECTED_JSON,
-            genDiff('json', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterJsonFile)
+            genDiff('json', $this->getFixturePath('tree-before.json'), $this->getFixturePath('tree-after.json'))
         );
     }
 
@@ -87,15 +108,7 @@ PLAIN;
     {
         $this->assertEquals(
             self::EXPECTED_JSON,
-            genDiff('json', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterYamlFile)
-        );
-    }
-
-    public function testTreeIniDiff()
-    {
-        $this->assertEquals(
-            self::EXPECTED_JSON,
-            genDiff('json', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterIniFile)
+            genDiff('json', $this->getFixturePath('tree-before.json'), $this->getFixturePath('tree-after.yaml'))
         );
     }
 
@@ -103,7 +116,15 @@ PLAIN;
     {
         $this->assertEquals(
             self::EXPECTED_PLAIN,
-            genDiff('plain', $this->pathToTreeBeforeJsonFile, $this->pathToTreeAfterJsonFile)
+            genDiff('plain', $this->getFixturePath('tree-before.json'), $this->getFixturePath('tree-after.json'))
+        );
+    }
+
+    public function testPrettyReport()
+    {
+        $this->assertEquals(
+            self::EXPECTED_PRETTY,
+            genDiff('plain', $this->getFixturePath('tree-before.json'), $this->getFixturePath('tree-after.json'))
         );
     }
 
@@ -114,7 +135,7 @@ PLAIN;
     public function testFileFormatException($pathToFile)
     {
         try {
-            genDiff('json', $pathToFile, $this->pathToFlatEqualAfterJsonFile);
+            genDiff('json', $pathToFile, $this->getFixturePath('tree-after.json'));
             $this->fail('expected exception');
         } catch (\Exception $e) {
         }
@@ -131,7 +152,7 @@ PLAIN;
     public function testGetContentException()
     {
         try {
-            genDiff('json', 'non-existent.json', $this->pathToFlatEqualAfterJsonFile);
+            genDiff('json', 'non-existent.json', $this->getFixturePath('tree-after.json'));
             $this->fail('expected exception');
         } catch (\Exception $e) {
         }
@@ -140,7 +161,7 @@ PLAIN;
     public function testReportFormatException()
     {
         try {
-            genDiff('wrong-format', $this->pathToFlatBeforeJsonFile, $this->pathToFlatEqualAfterJsonFile);
+            genDiff('wrong', $this->getFixturePath('tree-before.json'), $this->getFixturePath('tree-after.json'));
             $this->fail('expected exception');
         } catch (\Exception $e) {
         }

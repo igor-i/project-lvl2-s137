@@ -11,29 +11,29 @@ namespace Differ\parsers;
 
 use \Symfony\Component\Yaml\Yaml;
 
-use function \Differ\lib\getContent;
-
-function jsonParser(string $pathToFile)
+function parseContent($format, $content)
 {
-    return json_decode(getContent($pathToFile), true);
+    switch ($format) {
+        case 'json':
+            $ast = jsonParser($content);
+            break;
+        case 'yaml':
+            $ast = yamlParser($content);
+            break;
+        default:
+            throw new \Exception("file format '{$format}' is unsupported");
+    }
+
+    return $ast;
 }
 
-function yamlParser(string $pathToFile)
+
+function jsonParser(string $content)
 {
-    return Yaml::parse(getContent($pathToFile), true);
+    return json_decode($content, true);
 }
 
-function iniParser(string $pathToFile)
+function yamlParser(string $content)
 {
-    $array = parse_ini_string(getContent($pathToFile), true, INI_SCANNER_TYPED);
-    return array_reduce(array_keys($array), function ($acc, $section) use ($array) {
-        $hierarchy = explode('.', $section);
-        if (count($hierarchy) > 1) {
-            //TODO вместо этого надо придумать как рекурсивно собирать многоуровневые массивы
-            $acc[$hierarchy[0]][$hierarchy[1]] = $array[$section];
-        } else {
-            $acc[$section] = $array[$section];
-        }
-        return $acc;
-    }, []);
+    return Yaml::parse($content, true);
 }
