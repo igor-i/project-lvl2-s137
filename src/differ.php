@@ -35,7 +35,7 @@ function genDiff(string $outputFormat, string $pathToFile1, string $pathToFile2)
         }
 
         $content1 = parseContent($inputFileFormat1, getContent($pathToFile1));
-        $content2 = parseContent($inputFileFormat2, getContent($pathToFile1));
+        $content2 = parseContent($inputFileFormat2, getContent($pathToFile2));
 
         if (!is_array($content1)) {
             throw new \Exception("file '{$pathToFile1}' does not contain {$inputFileFormat1} data");
