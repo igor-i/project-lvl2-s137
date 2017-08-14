@@ -58,7 +58,6 @@ function plainReport(array $ast)
             $pathToNode = implode('.', $parents);
             switch ($node['type']) {
                 case 'nested':
-                    $parents[] = $node['node'];
                     $acc = array_merge($acc, $iter($node['children'], $parents));
                     break;
                 case 'added':
@@ -85,7 +84,7 @@ function plainReport(array $ast)
 
 function prettyReport(array $ast)
 {
-    $iter = function (array $branch, integer $level) use (&$iter) {
+    $iter = function (array $branch, $level) use (&$iter) {
 
         $printIndent = function (integer $level) {
             $string = '';
