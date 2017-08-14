@@ -103,7 +103,19 @@ function prettyReport(array $ast)
             return $string;
         };
 
-        return array_reduce($branch, function ($acc, $node) use ($level, $iter, $printIndent, $printArray) {
+        $printBool = function ($variable) {
+            if (is_bool($variable)) {
+                switch ($variable) {
+                    case true:
+                        return true;
+                    case false:
+                        return false;
+                }
+            }
+            return $variable;
+        };
+
+        return array_reduce($branch, function ($acc, $node) use ($level, $iter, $printIndent, $printArray, $printBool) {
             $acc .= $printIndent($level);
             switch ($node['type']) {
                 case 'nested':
@@ -116,7 +128,7 @@ function prettyReport(array $ast)
                     if (is_array($node['to'])) {
                         $acc .= $printArray($node['to'], $level);
                     } else {
-                        $acc .= "\"{$node['to']}\"" . PHP_EOL;
+                        $acc .= "\"{$printBool($node['to'])}\"" . PHP_EOL;
                     }
                     break;
                 case 'added':
@@ -124,7 +136,7 @@ function prettyReport(array $ast)
                     if (is_array($node['to'])) {
                         $acc .= $printArray($node['to'], $level);
                     } else {
-                        $acc .= "\"{$node['to']}\"" . PHP_EOL;
+                        $acc .= "\"{$printBool($node['to'])}\"" . PHP_EOL;
                     }
                     break;
                 case 'removed':
@@ -132,7 +144,7 @@ function prettyReport(array $ast)
                     if (is_array($node['from'])) {
                         $acc .= $printArray($node['from'], $level);
                     } else {
-                        $acc .= "\"{$node['from']}\"" . PHP_EOL;
+                        $acc .= "\"{$printBool($node['from'])}\"" . PHP_EOL;
                     }
                     break;
                 case 'changed':
@@ -140,14 +152,14 @@ function prettyReport(array $ast)
                     if (is_array($node['to'])) {
                         $acc .= $printArray($node['to'], $level);
                     } else {
-                        $acc .= "\"{$node['to']}\"" . PHP_EOL;
+                        $acc .= "\"{$printBool($node['to'])}\"" . PHP_EOL;
                     }
                     $acc .= $printIndent($level);
                     $acc .= "- \"{$node['node']}\": ";
                     if (is_array($node['from'])) {
                         $acc .= $printArray($node['from'], $level);
                     } else {
-                        $acc .= "\"{$node['from']}\"" . PHP_EOL;
+                        $acc .= "\"{$printBool($node['from'])}\"" . PHP_EOL;
                     }
                     break;
             }
