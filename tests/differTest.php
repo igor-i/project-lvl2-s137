@@ -25,12 +25,13 @@ Property 'group1.baz' was changed. From 'bas' to 'bars'
 Property 'group2' was removed
 Property 'group3' was added with value: 'complex value'
 PLAIN;
+    //"setting3": true
     const EXPECTED_PRETTY = <<<PRETTY
 {
     "common": {
         "setting1": "Value 1"
       - "setting2": "200"
-        "setting3": true
+        "setting3": "1"
       - "setting6": {
             "key": "value"
         }
