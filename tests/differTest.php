@@ -83,15 +83,15 @@ PRETTY;
         return [
             [
                 '{"a":1,"b":2,"c":3,"d":4}',
-                $this->$this->getFixturePath('flat-equal-after.json')
+                $this->getFixturePath('flat-equal-after.json')
             ],
             [
                 '{"- a":1,"- b":2,"- c":3,"- d":4}',
-                $this->$this->getFixturePath('flat-minus-after.json')
+                $this->getFixturePath('flat-minus-after.json')
             ],
             [
                 '{"a":1,"+ b":"2","- b":2,"- c":3,"+ d":"new value","- d":4,"+ new":"value"}',
-                $this->$this->getFixturePath('flat-plus-minus-after.json')
+                $this->getFixturePath('flat-plus-minus-after.json')
             ],
         ];
     }
