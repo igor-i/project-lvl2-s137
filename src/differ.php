@@ -18,8 +18,7 @@ use function \Differ\parsers\parseContent;
 use function \Differ\reports\outputReport;
 
 const FILE_FORMATS = ['json', 'yaml'];
-//const REPORT_FORMATS = ['plain', 'pretty', 'json'];
-const REPORT_FORMATS = ['json', 'plain'];
+const REPORT_FORMATS = ['plain', 'pretty', 'json'];
 
 function genDiff(string $outputFormat, string $pathToFile1, string $pathToFile2)
 {

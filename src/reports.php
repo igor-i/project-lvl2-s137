@@ -152,7 +152,7 @@ function prettyReport(array $ast)
             }
             $acc .= $printIndent($level) . '  ';
             return $acc;
-        }, []);
+        }, '');
     };
 
     $output = $iter($ast, 0);
