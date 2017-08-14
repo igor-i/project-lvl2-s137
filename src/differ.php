@@ -14,6 +14,7 @@ use \Funct\Collection;
 
 use function \Differ\lib\defineFileFormat;
 use function \Differ\lib\getContent;
+use function \Differ\lib\boolToTrueOrFalse;
 use function \Differ\parsers\parseContent;
 use function \Differ\reports\outputReport;
 
@@ -64,19 +65,19 @@ function arraysDiff(array $array1, array $array2)
                     'children' => arraysDiff($array1[$key], $array2[$key])
                 ];
             } else {
-                if ($array1[$key] == $array2[$key]) {
+                if ($array1[$key] === $array2[$key]) {
                     $acc[] = [
                         'type' => 'unchanged',
                         'node' => $key,
-                        'from' => $array2[$key],
-                        'to' => $array2[$key]
+                        'from' => boolToTrueOrFalse($array2[$key]),
+                        'to' => boolToTrueOrFalse($array2[$key])
                     ];
                 } else {
                     $acc[] = [
                         'type' => 'changed',
                         'node' => $key,
-                        'from' => $array1[$key],
-                        'to' => $array2[$key]
+                        'from' => boolToTrueOrFalse($array1[$key]),
+                        'to' => boolToTrueOrFalse($array2[$key])
                     ];
                 }
             }
@@ -84,7 +85,7 @@ function arraysDiff(array $array1, array $array2)
             $acc[] = [
                 'type' => 'removed',
                 'node' => $key,
-                'from' => $array1[$key],
+                'from' => boolToTrueOrFalse($array1[$key]),
                 'to' => ''
             ];
         } else {
@@ -92,7 +93,7 @@ function arraysDiff(array $array1, array $array2)
                 'type' => 'added',
                 'node' => $key,
                 'from' => '',
-                'to' => $array2[$key]
+                'to' => boolToTrueOrFalse($array2[$key])
             ];
         }
         return $acc;

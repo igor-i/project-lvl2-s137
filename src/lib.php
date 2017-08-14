@@ -26,3 +26,13 @@ function defineFileFormat(string $pathToFile)
     $info = new \SplFileInfo($pathToFile);
     return $info->getExtension();
 }
+
+function boolToTrueOrFalse($bool)
+{
+    if ($bool === 1) {
+        return true;
+    } elseif ($bool === 0) {
+        return false;
+    }
+    return $bool;
+}
