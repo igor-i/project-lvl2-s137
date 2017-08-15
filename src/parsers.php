@@ -7,8 +7,6 @@
 
 namespace Differ\parsers;
 
-//require_once 'lib.php';
-
 use \Symfony\Component\Yaml\Yaml;
 
 function parseContent(string $format, string $content)
