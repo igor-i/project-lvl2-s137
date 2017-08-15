@@ -84,14 +84,10 @@ function plainReport(array $ast)
 
 function prettyReport(array $ast)
 {
-    $iter = function (array $branch, $level) use (&$iter) {
+    $iter = function (array $branch, int $level) use (&$iter) {
 
-        $printIndent = function ($level) {
-            $string = '';
-            for ($i = (int)$level * 4 + 2; $i > 0; $i--) {
-                $string .= ' ';
-            }
-            return $string;
+        $printIndent = function (int $level) {
+            return str_repeat(' ', $level * 4 + 2);
         };
 
         $printBool = function ($variable) {
@@ -106,68 +102,68 @@ function prettyReport(array $ast)
             return "\"{$variable}\"";
         };
 
-        $printArray = function (array $array, $level) use ($printIndent, $printBool) {
-            $string = '{' . PHP_EOL;
+        $printArray = function (array $array, int $level) use ($printIndent, $printBool) {
+            $result = [];
             foreach ($array as $key => $value) {
-                $string .= $printIndent((int)$level + 1) . "  \"{$key}\": " . $printBool($value) . PHP_EOL;
+                $result[] = "{$printIndent($level + 1)}  \"{$key}\": {$printBool($value)}";
             }
-            $string .= $printIndent($level) . '  }' . PHP_EOL;
-            return $string;
+            return $result;
         };
 
         return array_reduce($branch, function ($acc, $node) use ($level, $iter, $printIndent, $printArray, $printBool) {
-            $acc .= $printIndent($level);
             switch ($node['type']) {
                 case 'nested':
-                    $acc .= "  \"{$node['node']}\": {" . PHP_EOL;
-                    $acc .= $iter($node['children'], (int)$level + 1);
-                    $acc .= $printIndent($level) . '  }' . PHP_EOL;
+                    $acc[] = "{$printIndent($level)}  \"{$node['node']}\": {";
+                    $acc = array_merge($acc, $iter($node['children'], (int)$level + 1));
+                    $acc[] = "{$printIndent($level)}  }";
                     break;
                 case 'unchanged':
-                    $acc .= "  \"{$node['node']}\": ";
                     if (is_array($node['to'])) {
-                        $acc .= $printArray($node['to'], $level);
+                        $acc[] = "{$printIndent($level)}  \"{$node['node']}\": {";
+                        $acc = array_merge($acc, $printArray($node['to'], $level));
+                        $acc[] = "{$printIndent($level)}  }";
                     } else {
-                        $acc .= $printBool($node['to']) . PHP_EOL;
+                        $acc[] = "{$printIndent($level)}  \"{$node['node']}\": {$printBool($node['to'])}";
                     }
                     break;
                 case 'added':
-                    $acc .= "+ \"{$node['node']}\": ";
                     if (is_array($node['to'])) {
-                        $acc .= $printArray($node['to'], $level);
+                        $acc[] = "{$printIndent($level)}+ \"{$node['node']}\": {";
+                        $acc = array_merge($acc, $printArray($node['to'], $level));
+                        $acc[] = "{$printIndent($level)}  }";
                     } else {
-                        $acc .= $printBool($node['to']) . PHP_EOL;
+                        $acc[] = "{$printIndent($level)}+ \"{$node['node']}\": {$printBool($node['to'])}";
                     }
                     break;
                 case 'removed':
-                    $acc .= "- \"{$node['node']}\": ";
                     if (is_array($node['from'])) {
-                        $acc .= $printArray($node['from'], $level);
+                        $acc[] = "{$printIndent($level)}- \"{$node['node']}\": {";
+                        $acc = array_merge($acc, $printArray($node['from'], $level));
+                        $acc[] = "{$printIndent($level)}  }";
                     } else {
-                        $acc .= $printBool($node['from']) . PHP_EOL;
+                        $acc[] = "{$printIndent($level)}- \"{$node['node']}\": {$printBool($node['from'])}";
                     }
                     break;
                 case 'changed':
-                    $acc .= "+ \"{$node['node']}\": ";
                     if (is_array($node['to'])) {
-                        $acc .= $printArray($node['to'], $level);
+                        $acc[] = "{$printIndent($level)}+ \"{$node['node']}\": {";
+                        $acc = array_merge($acc, $printArray($node['to'], $level));
+                        $acc[] = "{$printIndent($level)}  }";
                     } else {
-                        $acc .= $printBool($node['to']) . PHP_EOL;
+                        $acc[] = "{$printIndent($level)}+ \"{$node['node']}\": {$printBool($node['to'])}";
                     }
-                    $acc .= $printIndent($level);
-                    $acc .= "- \"{$node['node']}\": ";
                     if (is_array($node['from'])) {
-                        $acc .= $printArray($node['from'], $level);
+                        $acc[] = "{$printIndent($level)}- \"{$node['node']}\": {";
+                        $acc = array_merge($acc, $printArray($node['from'], $level));
+                        $acc[] = "{$printIndent($level)}  }";
                     } else {
-                        $acc .= $printBool($node['from']) . PHP_EOL;
+                        $acc[] = "{$printIndent($level)}- \"{$node['node']}\": {$printBool($node['from'])}";
                     }
                     break;
             }
             return $acc;
-        }, '');
+        }, []);
     };
 
-    $output = $iter($ast, 0);
-
-    return '{' . PHP_EOL . $output . '}';
+    return implode(PHP_EOL, array_merge(['{'], $iter($ast, 0), ['}']));
 }
