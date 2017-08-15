@@ -15,7 +15,7 @@ use function \Differ\differ\genDiff;
 class DifferTest extends TestCase
 {
     const TEST_FIXTURES_DIR = 'tests'  . DIRECTORY_SEPARATOR . 'fixtures';
-    const EXPECTED_JSON = '{"common":{"setting1":"Value 1","- setting2":"200","setting3":true,"- setting6":{"key":"value"},"+ setting4":"blah blah","+ setting5":{"key5":"value5"}},"group1":{"+ baz":"bars","- baz":"bas","foo":"bar"},"- group2":{"abc":"12345"},"+ group3":{"fee":"100500"}}';
+    const EXPECTED_JSON = '[{"type":"nested","node":"common","children":[{"type":"unchanged","node":"setting1","from":"Value 1","to":"Value 1"},{"type":"removed","node":"setting2","from":"200","to":""},{"type":"unchanged","node":"setting3","from":true,"to":true},{"type":"removed","node":"setting6","from":{"key":"value"},"to":""},{"type":"added","node":"setting4","from":"","to":"blah blah"},{"type":"added","node":"setting5","from":"","to":{"key5":"value5"}}]},{"type":"nested","node":"group1","children":[{"type":"changed","node":"baz","from":"bas","to":"bars"},{"type":"unchanged","node":"foo","from":"bar","to":"bar"}]},{"type":"removed","node":"group2","from":{"abc":"12345"},"to":""},{"type":"added","node":"group3","from":"","to":{"fee":"100500"}}]';
     const EXPECTED_PLAIN = <<<PLAIN
 Property 'common.setting2' was removed
 Property 'common.setting6' was removed

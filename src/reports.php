@@ -23,31 +23,7 @@ function outputReport(string $format, array $ast)
 
 function jsonReport(array $ast)
 {
-    $iter = function ($ast) use (&$iter) {
-        return array_reduce($ast, function ($acc, $node) use ($iter) {
-            switch ($node['type']) {
-                case 'nested':
-                    $acc[$node['node']] = $iter($node['children']);
-                    break;
-                case 'unchanged':
-                    $acc[$node['node']] = $node['to'];
-                    break;
-                case 'added':
-                    $acc["+ {$node['node']}"] = $node['to'];
-                    break;
-                case 'removed':
-                    $acc["- {$node['node']}"] = $node['from'];
-                    break;
-                case 'changed':
-                    $acc["+ {$node['node']}"] = $node['to'];
-                    $acc["- {$node['node']}"] = $node['from'];
-                    break;
-            }
-            return $acc;
-        }, []);
-    };
-
-    return json_encode($iter($ast));
+    return json_encode($ast);
 }
 
 function plainReport(array $ast)
