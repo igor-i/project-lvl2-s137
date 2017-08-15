@@ -7,6 +7,8 @@
 
 namespace Differ\reports;
 
+use \Funct\Collection;
+
 function outputReport(string $format, array $ast)
 {
     switch ($format) {
@@ -15,7 +17,7 @@ function outputReport(string $format, array $ast)
         case 'plain':
             return plainReport($ast);
         case 'pretty':
-            return prettyReport($ast);
+            return prettyReport2($ast);
         default:
             throw new \Exception("report format '{$format}' is unsupported");
     }
@@ -142,4 +144,108 @@ function prettyReport(array $ast)
     };
 
     return implode(PHP_EOL, array_merge(['{'], $iter($ast, 0), ['}']));
+}
+
+function prettyReport2(array $ast)
+{
+    $iter = function (array $branch, int $level) use (&$iter) {
+
+        return array_map(function ($node) use ($level, $iter) {
+            switch ($node['type']) {
+                case 'nested':
+                    return [
+                        printIndent($level) . "  \"{$node['node']}\": {",
+                        $iter($node['children'], $level + 1),
+                        printIndent($level) . "  }"
+                    ];
+                case 'unchanged':
+                    if (is_array($node['to'])) {
+                        return printCollection($level, $node['node'], $node['to']);
+                    } else {
+                        return printKeyValue($level, $node['node'], $node['to']);
+                    }
+                    break;
+                case 'added':
+                    if (is_array($node['to'])) {
+                        return printCollection($level, $node['node'], $node['to'], '+');
+                    } else {
+                        return printKeyValue($level, $node['node'], $node['to'], '+');
+                    }
+                    break;
+                case 'removed':
+                    if (is_array($node['from'])) {
+                        return printCollection($level, $node['node'], $node['from'], '-');
+                    } else {
+                        return printKeyValue($level, $node['node'], $node['from'], '-');
+                    }
+                    break;
+                case 'changed':
+                    if (is_array($node['to'])) {
+                        $result[] = printCollection($level, $node['node'], $node['to'], '+');
+                    } else {
+                        $result[] = printKeyValue($level, $node['node'], $node['to'], '+');
+                    }
+                    if (is_array($node['from'])) {
+                        $result[] = printCollection($level, $node['node'], $node['from'], '-');
+                    } else {
+                        $result[] = printKeyValue($level, $node['node'], $node['from'], '-');
+                    }
+                    return $result;
+                default:
+                    return '';
+            }
+        }, $branch);
+    };
+
+    return implode(
+        PHP_EOL,
+        array_merge(
+            ['{'],
+            Collection\flattenAll($iter($ast, 0)),
+            ['}']
+        )
+    );
+}
+
+function printIndent(int $level)
+{
+    return str_repeat(' ', $level * 4 + 2);
+}
+
+function printBool($variable)
+{
+    if (is_bool($variable)) {
+        switch ($variable) {
+            case true:
+                return 'true';
+            case false:
+                return 'false';
+        }
+    }
+    return "\"{$variable}\"";
+}
+
+function printCollection(int $level, string $key, array $value, string $prefix = ' ')
+{
+    $map = array_map(function ($key) use ($value, $level) {
+        return printKeyValue($level + 1, $key, $value[$key]);
+    }, array_keys($value));
+
+    return [
+        printIndent($level) . "{$prefix} \"{$key}\": {",
+        $map,
+        printIndent($level) . "  }"
+    ];
+}
+
+function printKeyValue(int $level, string $key, $value, string $prefix = ' ')
+{
+    return implode(
+        [
+            printIndent($level),
+            $prefix,
+            " \"{$key}\": ",
+            printBool($value)
+        ]
+    );
 }
