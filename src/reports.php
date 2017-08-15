@@ -17,7 +17,7 @@ function outputReport(string $format, array $ast)
         case 'plain':
             return plainReport($ast);
         case 'pretty':
-            return prettyReport2($ast);
+            return prettyReport($ast);
         default:
             throw new \Exception("report format '{$format}' is unsupported");
     }
@@ -61,92 +61,6 @@ function plainReport(array $ast)
 }
 
 function prettyReport(array $ast)
-{
-    $iter = function (array $branch, int $level) use (&$iter) {
-
-        $printIndent = function (int $level) {
-            return str_repeat(' ', $level * 4 + 2);
-        };
-
-        $printBool = function ($variable) {
-            if (is_bool($variable)) {
-                switch ($variable) {
-                    case true:
-                        return 'true';
-                    case false:
-                        return 'false';
-                }
-            }
-            return "\"{$variable}\"";
-        };
-
-        $printArray = function (array $array, int $level) use ($printIndent, $printBool) {
-            $result = [];
-            foreach ($array as $key => $value) {
-                $result[] = "{$printIndent($level + 1)}  \"{$key}\": {$printBool($value)}";
-            }
-            return $result;
-        };
-
-        return array_reduce($branch, function ($acc, $node) use ($level, $iter, $printIndent, $printArray, $printBool) {
-            switch ($node['type']) {
-                case 'nested':
-                    $acc[] = "{$printIndent($level)}  \"{$node['node']}\": {";
-                    $acc = array_merge($acc, $iter($node['children'], (int)$level + 1));
-                    $acc[] = "{$printIndent($level)}  }";
-                    break;
-                case 'unchanged':
-                    if (is_array($node['to'])) {
-                        $acc[] = "{$printIndent($level)}  \"{$node['node']}\": {";
-                        $acc = array_merge($acc, $printArray($node['to'], $level));
-                        $acc[] = "{$printIndent($level)}  }";
-                    } else {
-                        $acc[] = "{$printIndent($level)}  \"{$node['node']}\": {$printBool($node['to'])}";
-                    }
-                    break;
-                case 'added':
-                    if (is_array($node['to'])) {
-                        $acc[] = "{$printIndent($level)}+ \"{$node['node']}\": {";
-                        $acc = array_merge($acc, $printArray($node['to'], $level));
-                        $acc[] = "{$printIndent($level)}  }";
-                    } else {
-                        $acc[] = "{$printIndent($level)}+ \"{$node['node']}\": {$printBool($node['to'])}";
-                    }
-                    break;
-                case 'removed':
-                    if (is_array($node['from'])) {
-                        $acc[] = "{$printIndent($level)}- \"{$node['node']}\": {";
-                        $acc = array_merge($acc, $printArray($node['from'], $level));
-                        $acc[] = "{$printIndent($level)}  }";
-                    } else {
-                        $acc[] = "{$printIndent($level)}- \"{$node['node']}\": {$printBool($node['from'])}";
-                    }
-                    break;
-                case 'changed':
-                    if (is_array($node['to'])) {
-                        $acc[] = "{$printIndent($level)}+ \"{$node['node']}\": {";
-                        $acc = array_merge($acc, $printArray($node['to'], $level));
-                        $acc[] = "{$printIndent($level)}  }";
-                    } else {
-                        $acc[] = "{$printIndent($level)}+ \"{$node['node']}\": {$printBool($node['to'])}";
-                    }
-                    if (is_array($node['from'])) {
-                        $acc[] = "{$printIndent($level)}- \"{$node['node']}\": {";
-                        $acc = array_merge($acc, $printArray($node['from'], $level));
-                        $acc[] = "{$printIndent($level)}  }";
-                    } else {
-                        $acc[] = "{$printIndent($level)}- \"{$node['node']}\": {$printBool($node['from'])}";
-                    }
-                    break;
-            }
-            return $acc;
-        }, []);
-    };
-
-    return implode(PHP_EOL, array_merge(['{'], $iter($ast, 0), ['}']));
-}
-
-function prettyReport2(array $ast)
 {
     $iter = function (array $branch, int $level) use (&$iter) {
 
