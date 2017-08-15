@@ -82,15 +82,15 @@ PRETTY;
     {
         return [
             [
-                '{"a":1,"b":2,"c":3,"d":4}',
+                '[{"type":"unchanged","node":"a","from":1,"to":1},{"type":"unchanged","node":"b","from":2,"to":2},{"type":"unchanged","node":"c","from":3,"to":3},{"type":"unchanged","node":"d","from":4,"to":4}]',
                 $this->getFixturePath('flat-equal-after.json')
             ],
             [
-                '{"- a":1,"- b":2,"- c":3,"- d":4}',
+                '[{"type":"removed","node":"a","from":1,"to":""},{"type":"removed","node":"b","from":2,"to":""},{"type":"removed","node":"c","from":3,"to":""},{"type":"removed","node":"d","from":4,"to":""}]',
                 $this->getFixturePath('flat-minus-after.json')
             ],
             [
-                '{"a":1,"+ b":"2","- b":2,"- c":3,"+ d":"new value","- d":4,"+ new":"value"}',
+                '[{"type":"unchanged","node":"a","from":1,"to":1},{"type":"changed","node":"b","from":2,"to":"2"},{"type":"removed","node":"c","from":3,"to":""},{"type":"changed","node":"d","from":4,"to":"new value"},{"type":"added","node":"new","from":"","to":"value"}]',
                 $this->getFixturePath('flat-plus-minus-after.json')
             ],
         ];
