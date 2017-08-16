@@ -68,41 +68,41 @@ function prettyReport(array $ast)
             switch ($node['type']) {
                 case 'nested':
                     return [
-                        printIndent($level) . "  \"{$node['node']}\": {",
+                        getIndent($level) . "  \"{$node['node']}\": {",
                         $iter($node['children'], $level + 1),
-                        printIndent($level) . "  }"
+                        getIndent($level) . "  }"
                     ];
                 case 'unchanged':
                     if (is_array($node['to'])) {
-                        return printCollection($level, $node['node'], $node['to']);
+                        return getCollection($level, $node['node'], $node['to']);
                     } else {
-                        return printKeyValue($level, $node['node'], $node['to']);
+                        return getKeyValue($level, $node['node'], $node['to']);
                     }
                     break;
                 case 'added':
                     if (is_array($node['to'])) {
-                        return printCollection($level, $node['node'], $node['to'], '+');
+                        return getCollection($level, $node['node'], $node['to'], '+');
                     } else {
-                        return printKeyValue($level, $node['node'], $node['to'], '+');
+                        return getKeyValue($level, $node['node'], $node['to'], '+');
                     }
                     break;
                 case 'removed':
                     if (is_array($node['from'])) {
-                        return printCollection($level, $node['node'], $node['from'], '-');
+                        return getCollection($level, $node['node'], $node['from'], '-');
                     } else {
-                        return printKeyValue($level, $node['node'], $node['from'], '-');
+                        return getKeyValue($level, $node['node'], $node['from'], '-');
                     }
                     break;
                 case 'changed':
                     if (is_array($node['to'])) {
-                        $result[] = printCollection($level, $node['node'], $node['to'], '+');
+                        $result[] = getCollection($level, $node['node'], $node['to'], '+');
                     } else {
-                        $result[] = printKeyValue($level, $node['node'], $node['to'], '+');
+                        $result[] = getKeyValue($level, $node['node'], $node['to'], '+');
                     }
                     if (is_array($node['from'])) {
-                        $result[] = printCollection($level, $node['node'], $node['from'], '-');
+                        $result[] = getCollection($level, $node['node'], $node['from'], '-');
                     } else {
-                        $result[] = printKeyValue($level, $node['node'], $node['from'], '-');
+                        $result[] = getKeyValue($level, $node['node'], $node['from'], '-');
                     }
                     return $result;
                 default:
@@ -121,12 +121,12 @@ function prettyReport(array $ast)
     );
 }
 
-function printIndent(int $level)
+function getIndent(int $level)
 {
     return str_repeat(' ', $level * 4 + 2);
 }
 
-function printBool($variable)
+function getBool($variable)
 {
     if (is_bool($variable)) {
         switch ($variable) {
@@ -139,27 +139,27 @@ function printBool($variable)
     return "\"{$variable}\"";
 }
 
-function printCollection(int $level, string $key, array $value, string $prefix = ' ')
+function getCollection(int $level, string $key, array $value, string $prefix = ' ')
 {
     $map = array_map(function ($key) use ($value, $level) {
-        return printKeyValue($level + 1, $key, $value[$key]);
+        return getKeyValue($level + 1, $key, $value[$key]);
     }, array_keys($value));
 
     return [
-        printIndent($level) . "{$prefix} \"{$key}\": {",
+        getIndent($level) . "{$prefix} \"{$key}\": {",
         $map,
-        printIndent($level) . "  }"
+        getIndent($level) . "  }"
     ];
 }
 
-function printKeyValue(int $level, string $key, $value, string $prefix = ' ')
+function getKeyValue(int $level, string $key, $value, string $prefix = ' ')
 {
     return implode(
         [
-            printIndent($level),
+            getIndent($level),
             $prefix,
             " \"{$key}\": ",
-            printBool($value)
+            getBool($value)
         ]
     );
 }
