@@ -33,6 +33,7 @@
     },
     "require-dev": {
         "phpunit/phpunit": "*",
-        "squizlabs/php_codesniffer": "*"
+        "squizlabs/php_codesniffer": "*",
+        "codeclimate/php-test-reporter": "^0.4.4"
     }
 }

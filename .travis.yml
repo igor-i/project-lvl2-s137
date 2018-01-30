@@ -7,3 +7,11 @@ install:
   - make install
 
 script: make lint test
+
+addons:
+  code_climate:
+    repo_token:
+      secure: "keeW3MJfbcg4fYaCVUPttkE68e5hsJM3Ojkp6KMg7ArxmJT8EcIJRDKgjRqfa0QqMYz5i6oIJQIl0rbNgBCBXm18ela7YwXH1x0evsZ3CviYoVLjaMHGNG3a3/3gWhnPvMvADxK89Vc5AKMKJUx9CZF50SgAWkr5e1KJ7T/yHgOX15FXIqex08V/+nh6Y+eDfKFY6Uk52yhNOJWa/MBtf1LjtYTzowIt5WH/ZVWCwoIPlPX5TxjWtJOPmAH3UvtQYYGjpjEFh15LICrWpapg030Mu5AeCY2/OT3+vrQxLAlyHSHVFN/URuKsIIfQ1mANfZn1IlcmehSMgpuKIigPb+HwOqWCJ1SBojEBN1h16gR+tDteeJu8/BdKMRsKpTkb45UZmlE5V7e4tcM6GWJ7utU2BqzfVYSGjBJ0/Byh5N0K17+Gxuzk0ZMeMv1N+pRSiNfBd7lj8odf6l1PVsnDSvw8mdvEgOIixJN+8h9zy3HqJXQHJNRjF7Lari2SAiegCuj07mzxX8V8wAtJKDBA/btRpPlvVyDGoboxKQ9yrn/1s1t5t+CWlkffxUuy9XQHDtp62dKNNfpd4vilZNajLN5ZfLg8gRqXLe+kY3HlBfF0LLC27PRWknwbxxsRempB0txTcr2P+wRQLpy+hmGty8qVilchTo7N5SegRTt/LlI="
+
+after_script:
+  - vendor/bin/test-reporter
